@@ -10,6 +10,7 @@ import sys
 import shutil
 import urllib2
 import tarfile
+import cv2
 import numpy as np
 
 
@@ -33,6 +34,7 @@ class MuctDataset(object):
 
     def __init__(self, datadir=DEFAULT_DATADIR):
         self._datadir = datadir
+        self._img_fname = os.path.join(datadir, 'jpg/%s.jpg')
 
     def download(self):
         """downloads and unpacks the muct dataset"""
@@ -80,6 +82,19 @@ class MuctDataset(object):
         self.tags = self.tags[keep]
         self.landmarks = self.landmarks[keep]
         self.landmarks_flip = self.landmarks_flip[keep]
+
+    def image(self, name, flip=False):
+        img = cv2.imread(self._img_fname % name)
+        return cv2.flip(img, 1) if flip else img
+
+    def iterimages(self, mirror=False):
+        # iterate over all images
+        for n in self.names:
+            yield self.image(n)
+        # iterate over all mirror images if required
+        if mirror:
+            for n in self.names:
+                yield self.image(n, flip=True)
 
 
 
