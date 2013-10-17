@@ -10,6 +10,7 @@ import sys
 import shutil
 import urllib2
 import tarfile
+import itertools
 import cv2
 import numpy as np
 
@@ -21,6 +22,34 @@ DEFAULT_DATADIR = os.path.expanduser('~/pyaam_data/muct')
 
 
 class MuctDataset(object):
+    # landmark pair connections
+    PAIRS = (
+        # jaw
+        (0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7),
+        (7, 8), (8, 9), (9, 10), (10, 11), (11, 12), (12, 13), (13, 14),
+        # right eyebrow
+        (15, 16), (16, 17), (17, 18), (18, 19), (19, 20), (20, 15),
+        # left eyebrow
+        (21, 22), (22, 23), (23, 24), (24, 25), (25, 26), (26, 21),
+        # left eye
+        (27, 68), (68, 28), (28, 69), (69, 29),
+        (29, 70), (70, 30), (30, 71), (71, 27),
+        # right eye
+        (32, 72), (72, 33), (33, 73), (73, 34),
+        (34, 74), (74, 35), (35, 75), (75, 32),
+        # nose
+        (37, 38), (38, 39), (39, 40), (40, 41),
+        (41, 42), (42, 43), (43, 44), (44, 45),
+        # nose tip
+        (41, 46), (46, 67), (67, 47), (47, 41),
+        # upper lip
+        (48, 49), (49, 50), (50, 51), (51, 52), (52, 53), (53, 54),
+        (48, 65), (65, 64), (64, 63), (63, 54),
+        # lower lip
+        (54, 55), (55, 56), (56, 57), (57, 58), (58, 59), (59, 48),
+        (48, 60), (60, 61), (61, 62), (62, 54),
+    )
+
     # dataset urls
     URLS = (
         'http://muct.googlecode.com/files/README.txt',
@@ -95,6 +124,9 @@ class MuctDataset(object):
         if mirror:
             for n in self.names:
                 yield self.image(n, flip=True)
+
+    def iterdata(self):
+        return itertools.izip(self.names, self.tags, self.landmarks, self.landmarks_flip)
 
 
 
