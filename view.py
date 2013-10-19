@@ -39,8 +39,7 @@ class LmksDrawer(object):
 
 if __name__ == '__main__':
     muct = MuctDataset()
-    muct.load()
-    muct.clean()
+    muct.load_clean()
 
     cv2.namedWindow('muct')
     flip = points = line = pairs = False

@@ -112,6 +112,10 @@ class MuctDataset(object):
         self.landmarks = self.landmarks[keep]
         self.landmarks_flip = self.landmarks_flip[keep]
 
+    def load_clean(self):
+        self.load()
+        self.clean()
+
     def image(self, name, flip=False):
         img = cv2.imread(self._img_fname % name)
         return cv2.flip(img, 1) if flip else img
@@ -127,6 +131,9 @@ class MuctDataset(object):
 
     def iterdata(self):
         return itertools.izip(self.names, self.tags, self.landmarks, self.landmarks_flip)
+
+    def all_lmks(self):
+        return np.concatenate((self.landmarks, self.landmarks_flip))
 
 
 
