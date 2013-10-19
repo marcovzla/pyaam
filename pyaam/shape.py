@@ -3,7 +3,6 @@
 from __future__ import division
 
 import numpy as np
-import cv2
 
 
 
@@ -180,7 +179,6 @@ def gram_schmid(V):
 def pca(C, frac, kmax):
     """principal component analysis"""
     u, s, vt = np.linalg.svd(C)
-    # s, u, vt = cv2.SVDecomp(C)
     vsum = s[:kmax].sum()
     v = k = 0
     while True:
