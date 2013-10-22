@@ -6,19 +6,22 @@ from __future__ import division
 import sys
 import cv2
 import numpy as np
-from pyaam.draw import Color, draw_points, draw_line, draw_pairs
+from pyaam.draw import Color, draw_string, draw_points, draw_line, draw_pairs
 from pyaam.muct import MuctDataset
 
 
 
 class LmksDrawer(object):
-    def __init__(self, img, img_flip, lmks, lmks_flip):
+    def __init__(self, name, img, img_flip, lmks, lmks_flip):
+        self.name = name
+        self.name_flip = name[0] + 'r' + name[1:]  # using muct naming scheme
         self.img = img
         self.img_flip = img_flip
         self.lmks = lmks
         self.lmks_flip = lmks_flip
 
     def draw(self, flip=False, points=False, line=False, pairs=False):
+        name = self.name_flip if flip else self.name
         img = self.img_flip if flip else self.img
         lmks = self.lmks_flip if flip else self.lmks
         # draw on image copy
@@ -26,6 +29,7 @@ class LmksDrawer(object):
         # prepare points
         pts = np.column_stack((lmks[::2], lmks[1::2]))
         # draw
+        draw_string(img, name)
         if line:
             draw_line(img, pts, Color.blue)
         if pairs:
@@ -44,8 +48,9 @@ if __name__ == '__main__':
     flip = points = line = pairs = False
 
     for name, tag, lmks, flipped in muct.iterdata():
-        print name
-        drawer = LmksDrawer(muct.image(name), muct.image(name, True), lmks, flipped)
+        image = muct.image(name)
+        image_flip = muct.image(name, flip=True)
+        drawer = LmksDrawer(name, image, image_flip, lmks, flipped)
 
         while True:
             img = drawer.draw(flip, points, line, pairs) 
