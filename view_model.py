@@ -4,22 +4,32 @@ from __future__ import division
 
 import sys
 import cv2
+import argparse
 import numpy as np
 from pyaam.muct import MuctDataset
 from pyaam.shape import ShapeModel
 from pyaam.draw import Color, draw_string, draw_points, draw_pairs
 
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--scale', type=float, default=200, help='scale')
+    parser.add_argument('--tranx', type=int, default=150, help='translate x')
+    parser.add_argument('--trany', type=int, default=150, help='translate y')
+    parser.add_argument('--width', type=int, default=300, help='image width')
+    parser.add_argument('--height', type=int, default=300, help='image height')
+    parser.add_argument('--shp-fn', default='shape.npz', help='shape model filename')
+    return parser.parse_args()
+
+
+
 if __name__ == '__main__':
-    fname = 'shape.npz'
-    scale = 200
-    tranx = 150
-    trany = 150
-    width = 300
-    height = 300
+    args = parse_args()
 
-    smodel = ShapeModel.load(fname)
+    smodel = ShapeModel.load(args.shp_fn)
 
-    img = np.empty((height, width, 3), dtype='uint8')
+    img = np.empty((args.height, args.width, 3), dtype='uint8')
 
     vals = np.empty(200)
     vals[:50] = np.arange(50) / 50
@@ -29,7 +39,7 @@ if __name__ == '__main__':
     while True:
         for k in xrange(4, smodel.model.shape[1]):
             for v in vals:
-                p = smodel.get_params(scale, tranx, trany)
+                p = smodel.get_params(args.scale, args.tranx, args.trany)
                 p[k] = p[0] * v * 3 * np.sqrt(smodel.variance[k])
 
                 img[:] = 0
