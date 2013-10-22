@@ -25,6 +25,7 @@ def parse_args():
 
 
 def genvals():
+    """generate trajectory of parameters"""
     vals = np.empty(200)
     vals[:50] = np.arange(50) / 50
     vals[50:100] = (50 - np.arange(50)) / 50
