@@ -86,7 +86,7 @@ class MuctDataset(object):
         # return to original directory
         os.chdir(cwd)
 
-    def load(self):
+    def load(self, clean=False):
         # read landmarks file
         fname =  os.path.join(self._datadir, 'muct-landmarks/muct76-opencv.csv')
         data = np.loadtxt(fname, delimiter=',', skiprows=1, dtype=str)
@@ -101,6 +101,8 @@ class MuctDataset(object):
         self.tags = tags[~flipped]
         self.landmarks = landmarks[~flipped]
         self.landmarks_flip = landmarks[flipped]
+        if clean:
+            self.clean()
 
     def clean(self):
         """remove landmarks with unavailable points"""
@@ -111,10 +113,6 @@ class MuctDataset(object):
         self.tags = self.tags[keep]
         self.landmarks = self.landmarks[keep]
         self.landmarks_flip = self.landmarks_flip[keep]
-
-    def load_clean(self):
-        self.load()
-        self.clean()
 
     def image(self, name, flip=False):
         img = cv2.imread(self._img_fname % name)

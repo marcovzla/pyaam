@@ -5,7 +5,7 @@ from pyaam.shape import ShapeModel
 
 if __name__ == '__main__':
     muct = MuctDataset()
-    muct.load_clean()
+    muct.load(clean=True)
 
     frac = 0.99
     kmax = 20
