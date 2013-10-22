@@ -19,7 +19,7 @@ def parse_args():
     parser.add_argument('--trany', type=int, default=150, help='translate y')
     parser.add_argument('--width', type=int, default=300, help='image width')
     parser.add_argument('--height', type=int, default=300, help='image height')
-    parser.add_argument('--shp-fn', default='shape.npz', help='shape model filename')
+    parser.add_argument('--shp-fn', default='data/shape.npz', help='shape model filename')
     return parser.parse_args()
 
 

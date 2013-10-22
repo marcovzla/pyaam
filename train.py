@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 from pyaam.muct import MuctDataset
 from pyaam.shape import ShapeModel
 
@@ -9,7 +10,10 @@ if __name__ == '__main__':
 
     frac = 0.99
     kmax = 20
-    filename = 'shape.npz'
+    filename = 'data/shape.npz'
+
+    if not os.path.exists('data'):
+        os.makedirs('data')
 
     data = muct.all_lmks()
 
