@@ -11,7 +11,7 @@ from pyaam.muct import MuctDataset
 
 
 
-class LmksDrawer(object):
+class LandmarkDrawer(object):
     def __init__(self, name, img, img_flip, lmks, lmks_flip):
         self.name = name
         self.name_flip = name[0] + 'r' + name[1:]  # using muct naming scheme
@@ -30,12 +30,9 @@ class LmksDrawer(object):
         pts = np.column_stack((lmks[::2], lmks[1::2]))
         # draw
         draw_string(img, name)
-        if line:
-            draw_line(img, pts, Color.blue)
-        if pairs:
-            draw_pairs(img, pts, MuctDataset.PAIRS, Color.red)
-        if points:
-            draw_points(img, pts, Color.green)
+        if line: draw_line(img, pts, Color.blue)
+        if pairs: draw_pairs(img, pts, MuctDataset.PAIRS, Color.red)
+        if points: draw_points(img, pts, Color.green)
         return img
 
 
@@ -50,7 +47,7 @@ if __name__ == '__main__':
     for name, tag, lmks, flipped in muct.iterdata():
         image = muct.image(name)
         image_flip = muct.image(name, flip=True)
-        drawer = LmksDrawer(name, image, image_flip, lmks, flipped)
+        drawer = LandmarkDrawer(name, image, image_flip, lmks, flipped)
 
         while True:
             img = drawer.draw(flip, points, line, pairs) 
