@@ -17,7 +17,7 @@ import numpy as np
 
 
 # default dataset directory
-DEFAULT_DATADIR = os.path.expanduser('~/pyaam_data/muct')
+DEFAULT_DATADIR = 'data/muct'
 
 
 
