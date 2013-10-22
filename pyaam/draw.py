@@ -19,6 +19,9 @@ class Color:
 
 
 
+def prepare(x):
+    return x.round().astype('int32')
+
 def draw_string(img, text):
     font = cv2.FONT_HERSHEY_COMPLEX
     size, baseLine = cv2.getTextSize(text, font, 0.6, 1)
@@ -26,12 +29,15 @@ def draw_string(img, text):
     cv2.putText(img, text, (1, size[1]+1), font, 0.6, Color.white, 1, cv2.CV_AA)
 
 def draw_points(img, points, color):
+    points = prepare(points)
     for p in points:
         cv2.circle(img, tuple(p), 2, color)
 
 def draw_line(img, points, color):
+    points = prepare(points)
     cv2.polylines(img, [points], False, color)
 
 def draw_pairs(img, points, pairs, color):
+    points = prepare(points)
     for a,b in pairs:
         cv2.line(img, tuple(points[a]), tuple(points[b]), color)

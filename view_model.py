@@ -40,7 +40,6 @@ if __name__ == '__main__':
                 q = smodel.calc_shape(p)
 
                 pts = np.column_stack((q[::2], q[1::2]))
-                pts = pts.round().astype('int32')
 
                 draw_pairs(img, pts, MuctDataset.PAIRS, Color.red)
                 draw_points(img, pts, Color.green)

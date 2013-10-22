@@ -25,7 +25,6 @@ class LmksDrawer(object):
         img = img.copy()
         # prepare points
         pts = np.column_stack((lmks[::2], lmks[1::2]))
-        pts = pts.round().astype('int32')
         # draw
         if line:
             draw_line(img, pts, Color.blue)
