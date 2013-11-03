@@ -45,9 +45,9 @@ if __name__ == '__main__':
         print 'reading images ...'
         images = list(muct.iterimages(mirror=True))
         print 'training patches model ...'
-        shape = ShapeModel.load(args.shp_fn)
-        params = shape.get_params()
-        ref = shape.calc_shape(params)
-        model = PatchesModel.train(data.T, images, ref, args.psize, args.ssize, args.var, args.lmbda, args.mu, args.nsamples)
+        sm = ShapeModel.load(args.shp_fn)
+        model = PatchesModel.train(data.T, images, sm.ref_shape(), args.psize,
+                                   args.ssize, args.var, args.lmbda, args.mu,
+                                   args.nsamples)
         model.save(args.ptc_fn)
         print 'wrote', args.ptc_fn

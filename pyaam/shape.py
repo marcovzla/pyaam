@@ -15,40 +15,31 @@ class ShapeModel(object):
     def train(cls, X, frac, kmax):
         n_samples = X.shape[1]
         n_points = X.shape[0] // 2
-
         # align shapes
         Y = procrustes(X)
-
         # compute rigid transform
         R = calc_rigid_basis(Y)
-
         # project out rigidity
         P = R.T.dot(Y)
         dY = Y - R.dot(P)
-
         # covariance matrix
         C = dY.dot(dY.T)
-
         # compute non-rigid transformation
         D = pca(C, frac, min(kmax, n_samples-1, n_points-1))
         k = D.shape[1]
-
         # combine subspaces
         V = np.concatenate((R,D), axis=1)
-
         # project raw data onto subspace
         Q = V.T.dot(X)
-
         # normalize coordinates w.r.t scale
         for i in xrange(n_samples):
             Q[:,i] /= Q[0,i]
-
         # compute variance
         e = np.empty(4+k, dtype=float)
         Q = pow(Q, 2)
         e[:4] = -1  # no clamping for rigid body coefficients
         e[4:] = Q[4:].sum(axis=1) / (n_samples-1)
-
+        # return model
         return cls(V, e)
 
     @classmethod
@@ -64,6 +55,10 @@ class ShapeModel(object):
 
     def calc_shape(self, params):
         return self.model.dot(params)
+
+    def ref_shape(self):
+        params = self.get_params()
+        return self.calc_shape(params)
 
     def calc_params(self, pts, c_factor=3.0):
         params = self.model.T.dot(pts)
