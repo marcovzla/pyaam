@@ -9,21 +9,22 @@ import numpy as np
 
 
 class PatchesModel(object):
-    def __init__(self, patches):
+    def __init__(self, patches, ref_shape):
         self.patches = patches
+        self.ref_shape = ref_shape
 
     @classmethod
     def train(cls, lmks, imgs, ref, psize, ssize, var, lmbda, mu_init, nsamples):
         patches = train_patches(lmks, imgs, ref, psize, ssize, var, lmbda, mu_init, nsamples)
-        return cls(patches)
+        return cls(patches, ref)
 
     @classmethod
     def load(cls, filename):
         arch = np.load(filename)
-        return cls(arch['patches'])
+        return cls(arch['patches'], arch['ref_shape'])
 
     def save(self, filename):
-        np.savez(filename, patches=self.patches)
+        np.savez(filename, patches=self.patches, ref_shape=self.ref_shape)
 
 
 

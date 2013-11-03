@@ -20,6 +20,7 @@ def parse_args():
     parser.add_argument('-lmbda', type=float, default=1e-6, help='regularization weight')
     parser.add_argument('--mu', type=float, default=1e-3, help='initial stochastic gradient descent step size')
     parser.add_argument('--nsamples', type=int, default=1000, help='number of stochastic gradient descent samples')
+    parser.add_argument('--face-width', type=int, default=100, help='face width')
     parser.add_argument('--shp-fn', default='data/shape.npz', help='shape model filename')
     parser.add_argument('--ptc-fn', default='data/patches.npz', help='patches model filename')
     return parser.parse_args()
@@ -46,8 +47,7 @@ if __name__ == '__main__':
         images = list(muct.iterimages(mirror=True))
         print 'training patches model ...'
         sm = ShapeModel.load(args.shp_fn)
-        model = PatchesModel.train(data.T, images, sm.ref_shape(), args.psize,
-                                   args.ssize, args.var, args.lmbda, args.mu,
-                                   args.nsamples)
+        model = PatchesModel.train(data.T, images, sm.get_shape(args.face_width), args.psize,
+                                   args.ssize, args.var, args.lmbda, args.mu, args.nsamples)
         model.save(args.ptc_fn)
         print 'wrote', args.ptc_fn

@@ -56,8 +56,8 @@ class ShapeModel(object):
     def calc_shape(self, params):
         return self.model.dot(params)
 
-    def ref_shape(self):
-        params = self.get_params()
+    def get_shape(self, scale=1, tranx=0, trany=0):
+        params = self.get_params(scale, tranx, trany)
         return self.calc_shape(params)
 
     def calc_params(self, pts, c_factor=3.0):
