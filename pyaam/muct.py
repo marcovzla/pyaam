@@ -165,3 +165,11 @@ def download(url, fname):
     # overwrite progress message
     sys.stdout.write(' ' * 20 + '\r')
     sys.stdout.flush()
+
+
+
+# download dataset with command:
+#   $ python -mpyaam.muct
+if __name__ == '__main__':
+    muct = MuctDataset()
+    muct.download()
