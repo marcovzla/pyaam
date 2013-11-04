@@ -8,3 +8,4 @@ Train models:
 
     ./train_model.py shape
     ./train_model.py patches
+    ./train_model.py detector
