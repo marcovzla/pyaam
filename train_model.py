@@ -5,12 +5,13 @@ import argparse
 from pyaam.muct import MuctDataset
 from pyaam.shape import ShapeModel
 from pyaam.patches import PatchesModel
+from pyaam.detector import FaceDetector
 
 
 
 def parse_args():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('model', choices=['shape', 'patches'], help='model name')
+    parser.add_argument('model', choices=['shape', 'patches', 'detector'], help='model name')
     parser.add_argument('--frac', type=float, default=0.99, help='')
     parser.add_argument('--kmax', type=int, default=20, help='')
     parser.add_argument('--width', type=int, default=100, help='face width')
@@ -23,6 +24,7 @@ def parse_args():
     parser.add_argument('--face-width', type=int, default=100, help='face width')
     parser.add_argument('--shp-fn', default='data/shape.npz', help='shape model filename')
     parser.add_argument('--ptc-fn', default='data/patches.npz', help='patches model filename')
+    parser.add_argument('--dtc-fn', default='data/detector.npz', help='face detector filename')
     return parser.parse_args()
 
 
@@ -51,3 +53,10 @@ if __name__ == '__main__':
                                    args.ssize, args.var, args.lmbda, args.mu, args.nsamples)
         model.save(args.ptc_fn)
         print 'wrote', args.ptc_fn
+
+    elif args.model == 'detector':
+        print 'training face detector ...'
+        sm = ShapeModel.load(args.shp_fn)
+        model = FaceDetector.train(data.T, muct.iterimages(mirror=True), sm.get_shape())
+        model.save(args.dtc_fn)
+        print 'wrote', args.dtc_fn
