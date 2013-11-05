@@ -94,6 +94,7 @@ def view_patches_model(ptc_fn, shp_fn, width):
         img = image.copy()
         y,x = points[i]
         h,w = patches[i].shape[:2]
+        img[y:y+h,x:x+w,:] = patches[i]  # draw current patch on top
         cv2.rectangle(img, (x,y), (x+w, y+h), Color.red, 2, cv2.CV_AA)
         text = 'patch %d' % (i+1)
         draw_string(img, text)
