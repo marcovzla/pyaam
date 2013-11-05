@@ -22,6 +22,7 @@ View models:
 
     ./view_model.py shape
     ./view_model.py patches
+    ./view_model.py detector
 
 ## References
 
