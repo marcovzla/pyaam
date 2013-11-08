@@ -22,16 +22,15 @@ class Color:
 def prepare(x):
     return x.round().astype('int32')
 
-def draw_string(img, text):
-    font = cv2.FONT_HERSHEY_COMPLEX
-    size, baseLine = cv2.getTextSize(text, font, 0.6, 1)
-    cv2.putText(img, text, (0, size[1]), font, 0.6, Color.black, 1, cv2.CV_AA)
-    cv2.putText(img, text, (1, size[1]+1), font, 0.6, Color.white, 1, cv2.CV_AA)
+def draw_string(img, text, font=cv2.FONT_HERSHEY_COMPLEX, scale=0.6, thickness=1):
+    size, baseLine = cv2.getTextSize(text, font, scale, thickness)
+    cv2.putText(img, text, (0, size[1]), font, scale, Color.black, thickness, cv2.CV_AA)
+    cv2.putText(img, text, (1, size[1]+1), font, scale, Color.white, thickness, cv2.CV_AA)
 
-def draw_points(img, points, color):
+def draw_points(img, points, color, radius=2):
     points = prepare(points)
     for p in points:
-        cv2.circle(img, tuple(p), 2, color)
+        cv2.circle(img, tuple(p), radius, color)
 
 def draw_line(img, points, color):
     points = prepare(points)
