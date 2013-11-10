@@ -26,6 +26,10 @@ class PatchesModel(object):
     def save(self, filename):
         np.savez(filename, patches=self.patches, ref_shape=self.ref_shape)
 
+    def calc_peaks(self, img, points, ssize):
+        points = points.reshape((len(points)//2, 2))
+        return calc_peaks(img, points, ssize, self.patches, self.ref_shape).flatten()
+
 
 
 def train_patch(images, psize, var=1.0, lmbda=1e-6, mu_init=1e-3, nsamples=1000):
