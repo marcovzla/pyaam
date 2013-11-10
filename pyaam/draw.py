@@ -4,6 +4,7 @@ from __future__ import division
 
 import cv2
 import cv2.cv as cv
+from pyaam.muct import MuctDataset
 
 
 
@@ -40,3 +41,9 @@ def draw_pairs(img, points, pairs, color):
     points = prepare(points)
     for a,b in pairs:
         cv2.line(img, tuple(points[a]), tuple(points[b]), color)
+
+def draw_muct_face(img, points):
+    # convert vector of points into matrix of size (n_pts, 2)
+    pts = points.reshape((len(points)//2, 2))
+    draw_pairs(img, pts, MuctDataset.PAIRS, Color.red)
+    draw_points(img, pts, Color.green)
