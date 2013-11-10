@@ -41,6 +41,14 @@ def genvals():
 
 
 
+def draw_face(img, points):
+    # convert vector of points into matrix of size (n_pts, 2)
+    pts = points.reshape((len(points)//2, 2))
+    draw_pairs(img, pts, MuctDataset.PAIRS, Color.red)
+    draw_points(img, pts, Color.green)
+
+
+
 def view_shape_model(shp_fn, scale, tranx, trany, width, height):
     img = np.empty((height, width, 3), dtype='uint8')
     smodel = ShapeModel.load(shp_fn)
@@ -54,9 +62,7 @@ def view_shape_model(shp_fn, scale, tranx, trany, width, height):
                 s = 'mode: %d, val: %f sd' % (k-3, v*3)
                 draw_string(img, s)
                 q = smodel.calc_shape(p)
-                pts = np.column_stack((q[::2], q[1::2]))
-                draw_pairs(img, pts, MuctDataset.PAIRS, Color.red)
-                draw_points(img, pts, Color.green)
+                draw_face(img, q)
                 cv2.imshow('shape model', img)
                 if cv2.waitKey(10) == 27:
                     sys.exit()
@@ -71,8 +77,7 @@ def view_face_detector(dtc_fn):
     while True:
         val, img = cam.read()
         p = detector.detect(img)
-        draw_pairs(img, p, MuctDataset.PAIRS, Color.red)
-        draw_points(img, p, Color.green)
+        draw_face(img, p)
         cv2.imshow('face detector', img)
         if cv2.waitKey(10) == 27:
             break

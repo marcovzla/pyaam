@@ -84,9 +84,8 @@ class FaceDetector(object):
         r = rects[0]
         scale = self.offset * r[2]
         p = self.ref_shape.copy()
-        p = np.column_stack((p[::2], p[1::2]))
-        p[:,0] = scale[2] * p[:,0] + r[0] + 0.5 * r[2] + scale[0]
-        p[:,1] = scale[2] * p[:,1] + r[1] + 0.5 * r[3] + scale[1]
+        p[::2] = scale[2] * p[::2] + r[0] + 0.5 * r[2] + scale[0]
+        p[1::2] = scale[2] * p[1::2] + r[1] + 0.5 * r[3] + scale[1]
         return p
 
 
