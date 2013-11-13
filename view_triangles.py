@@ -5,12 +5,20 @@ from __future__ import division
 
 import sys
 import cv2
+import argparse
 from pyaam.muct import MuctDataset
 from pyaam.shape import ShapeModel
 from pyaam.draw import draw_polygons, Color
 from pyaam.utils import get_aabb, normalize, warp_triangles, get_vertices
 
+
+
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--no-tm', dest='use_tm', action='store_false',
+                        help='disable TextureMapper')
+    args = parser.parse_args()
+
     cv2.namedWindow('triangles')
     cv2.namedWindow('warp')
 
@@ -22,7 +30,12 @@ if __name__ == '__main__':
     verts = get_vertices(ref)
 
     muct = MuctDataset()
-    muct.load(clean=True)    
+    muct.load(clean=True)
+
+    if args.use_tm:
+        from pyaam.texturemapper import TextureMapper
+        tm = TextureMapper(480, 640)
+        warp_triangles = tm.warp_triangles
 
     for name, tag, lmks, flipped in muct.iterdata():
         img = muct.image(name)
