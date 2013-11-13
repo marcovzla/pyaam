@@ -42,6 +42,11 @@ def draw_pairs(img, points, pairs, color):
     for a,b in pairs:
         cv2.line(img, tuple(points[a]), tuple(points[b]), color)
 
+def draw_polygons(img, polygons, color):
+    polygons = prepare(polygons)
+    for p in polygons:
+        cv2.polylines(img, [p], True, color)
+
 def draw_muct_face(img, points):
     # convert vector of points into matrix of size (n_pts, 2)
     pts = points.reshape((len(points)//2, 2))
