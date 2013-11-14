@@ -23,6 +23,15 @@ def normalize(img, aabb):
     img[y:y+h,x:x+w,2] = cv2.equalizeHist(img[y:y+h,x:x+w,2])
     return img
 
+def get_mask(pts, shape):
+    pts = pts.astype('int32')
+    mask = np.zeros(shape, dtype='uint8')
+    hull = cv2.convexHull(pts[:,np.newaxis])
+    hull = hull.reshape((hull.shape[0], hull.shape[2]))
+    cv2.fillConvexPoly(mask, hull, 255)
+    return mask.astype(bool)
+
+# NOTE you should use pyaam.texturemapper.TextureMapper instead
 def warp_triangles(img, src, dst):
     result = np.zeros(img.shape, dtype='uint8')
     dsize = (img.shape[1], img.shape[0])
