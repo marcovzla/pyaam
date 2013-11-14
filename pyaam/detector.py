@@ -45,7 +45,7 @@ class FaceDetector(object):
 
             x,y,w,h = rects[0]
             if enough_bounded_points(pts, (x,y,w,h), frac):
-                center = pts.reshape((pts.size//2,2)).sum(axis=0) / (pts.shape[0]//2)
+                center = pts.reshape((pts.size//2,2)).sum(axis=0) / (pts.size//2)
                 xoffset.append((center[0] - (x + 0.5 * w)) / w)
                 yoffset.append((center[1] - (y + 0.5 * h)) / w)
                 zoffset.append(calc_scale(pts, ref) / w)
