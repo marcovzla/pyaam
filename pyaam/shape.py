@@ -3,6 +3,7 @@
 from __future__ import division
 
 import numpy as np
+from pyaam.utils import pca
 
 
 
@@ -170,17 +171,3 @@ def gram_schmid(V):
     # orthonormalization was performed in-place
     # but we return V for convenience
     return V
-
-def pca(C, frac, kmax):
-    """principal component analysis"""
-    u, s, vt = np.linalg.svd(C)
-    vsum = s[:kmax].sum()
-    v = k = 0
-    while True:
-        v += s[k]
-        k += 1
-        # retain fraction `frac` of the variance
-        if v/vsum >= frac:
-            break
-    k = min(k, kmax)
-    return u[:,:k]

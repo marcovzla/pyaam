@@ -44,3 +44,16 @@ def warp_triangles(img, src, dst):
         result[mask] = warp[mask]
     return result
 
+def pca(C, frac, kmax):
+    """principal component analysis"""
+    u, s, vt = np.linalg.svd(C)
+    vsum = s[:kmax].sum()
+    v = k = 0
+    while True:
+        v += s[k]
+        k += 1
+        # retain fraction `frac` of the variance
+        if v/vsum >= frac:
+            break
+    k = min(k, kmax)
+    return u[:,:k]
