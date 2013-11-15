@@ -44,9 +44,14 @@ def warp_triangles(img, src, dst):
         result[mask] = warp[mask]
     return result
 
-def pca(C, frac, kmax):
+def pca(M, frac, kmax):
     """principal component analysis"""
+    enough_samples = M.shape[1] > M.shape[0]  # each column is a sample
+    # covariance matrix
+    C = M.dot(M.T) if enough_samples else M.T.dot(M) / M.shape[1]
     u, s, vt = np.linalg.svd(C)
+    if not enough_samples:
+        u = M.dot(u)
     vsum = s[:kmax].sum()
     v = k = 0
     while True:

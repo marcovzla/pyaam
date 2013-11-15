@@ -23,16 +23,14 @@ class ShapeModel(object):
         # project out rigidity
         P = R.T.dot(Y)
         dY = Y - R.dot(P)
-        # covariance matrix
-        C = dY.dot(dY.T)
         # compute non-rigid transformation
-        D = pca(C, frac, min(kmax, n_samples-1, n_points-1))
+        D = pca(dY, frac, min(kmax, n_samples-1, n_points-1))
         k = D.shape[1]
         # combine subspaces
         V = np.concatenate((R,D), axis=1)
         # project raw data onto subspace
         Q = V.T.dot(X)
-        # normalize coordinates w.r.t scale
+        # normalize coordinates w.r.t. scale
         for i in xrange(n_samples):
             Q[:,i] /= Q[0,i]
         # compute variance
