@@ -5,6 +5,7 @@ from __future__ import division
 import cv2
 import cv2.cv as cv
 from pyaam.muct import MuctDataset
+from pyaam.utils import get_mask
 
 
 
@@ -52,3 +53,9 @@ def draw_muct_face(img, points):
     pts = points.reshape((len(points)//2, 2))
     draw_pairs(img, pts, MuctDataset.PAIRS, Color.red)
     draw_points(img, pts, Color.green)
+
+def draw_texture(img, texture, points):
+    texture = texture.round().reshape((texture.size//3, 3))
+    mask = get_mask(points, img.shape[:2])
+    img[mask] = texture
+    return img
