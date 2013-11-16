@@ -9,14 +9,15 @@ import argparse
 import numpy as np
 from pyaam.shape import ShapeModel
 from pyaam.patches import PatchesModel
+from pyaam.texture import TextureModel
 from pyaam.detector import FaceDetector
-from pyaam.draw import Color, draw_string, draw_muct_face
+from pyaam.draw import Color, draw_string, draw_muct_face, draw_texture
 
 
 
 def parse_args():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('model', choices=['shape', 'patches', 'detector'], help='model name')
+    parser.add_argument('model', choices=['shape', 'patches', 'detector', 'texture'], help='model name')
     parser.add_argument('--scale', type=float, default=200, help='scale')
     parser.add_argument('--tranx', type=int, default=150, help='translate x')
     parser.add_argument('--trany', type=int, default=150, help='translate y')
@@ -26,6 +27,7 @@ def parse_args():
     parser.add_argument('--shp-fn', default='data/shape.npz', help='shape model filename')
     parser.add_argument('--ptc-fn', default='data/patches.npz', help='patches model filename')
     parser.add_argument('--dtc-fn', default='data/detector.npz', help='face detector filename')
+    parser.add_argument('--txt-fn', default='data/texture.npz', help='texture model filename')
     return parser.parse_args()
 
 
@@ -55,6 +57,30 @@ def view_shape_model(shp_fn, scale, tranx, trany, width, height):
                 q = smodel.calc_shape(p)
                 draw_muct_face(img, q)
                 cv2.imshow('shape model', img)
+                if cv2.waitKey(10) == 27:
+                    sys.exit()
+
+
+
+def view_texture_model(shp_fn, txt_fn, scale, tranx, trany, width, height):
+    img = np.empty((height, width, 3), dtype='uint8')
+    smodel = ShapeModel.load(shp_fn)
+    tmodel = TextureModel.load(txt_fn)
+    vals = genvals()
+    # get reference shape
+    ref = smodel.get_shape(scale, tranx, trany)
+    ref = ref.reshape((ref.size//2, 2))
+    while True:
+        for k in xrange(tmodel.num_modes()):
+            for v in vals:
+                p = np.zeros(tmodel.num_modes())
+                p[k] = v * 3 * np.sqrt(tmodel.variance[k])
+                img[:] = 0
+                s = 'mode: %d, val: %f sd' % (k, v*3)
+                draw_string(img, s)
+                t = tmodel.calc_texture(p)
+                draw_texture(img, t, ref)
+                cv2.imshow('texture model', img)
                 if cv2.waitKey(10) == 27:
                     sys.exit()
 
@@ -139,3 +165,6 @@ if __name__ == '__main__':
 
     elif args.model == 'detector':
         view_face_detector(args.dtc_fn)
+
+    elif args.model == 'texture':
+        view_texture_model(args.shp_fn, args.txt_fn, 200, 150, 150, args.width, args.height)

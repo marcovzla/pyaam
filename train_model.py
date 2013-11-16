@@ -5,15 +5,16 @@ import argparse
 from pyaam.muct import MuctDataset
 from pyaam.shape import ShapeModel
 from pyaam.patches import PatchesModel
+from pyaam.texture import TextureModel
 from pyaam.detector import FaceDetector
 
 
 
 def parse_args():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('model', choices=['shape', 'patches', 'detector'], help='model name')
-    parser.add_argument('--frac', type=float, default=0.99, help='')
-    parser.add_argument('--kmax', type=int, default=20, help='')
+    parser.add_argument('model', choices=['shape', 'patches', 'detector', 'texture'], help='model name')
+    parser.add_argument('--frac', type=float, default=0.99, help='fraction of variation')
+    parser.add_argument('--kmax', type=int, default=20, help='maximum modes')
     parser.add_argument('--width', type=int, default=100, help='face width')
     parser.add_argument('--psize', type=int, default=11, help='patch size')
     parser.add_argument('--ssize', type=int, default=11, help='search window size')
@@ -25,6 +26,7 @@ def parse_args():
     parser.add_argument('--shp-fn', default='data/shape.npz', help='shape model filename')
     parser.add_argument('--ptc-fn', default='data/patches.npz', help='patches model filename')
     parser.add_argument('--dtc-fn', default='data/detector.npz', help='face detector filename')
+    parser.add_argument('--txt-fn', default='data/texture.npz', help='texture model filename')
     return parser.parse_args()
 
 
@@ -60,3 +62,12 @@ if __name__ == '__main__':
         model = FaceDetector.train(data.T, muct.iterimages(mirror=True), sm.get_shape())
         model.save(args.dtc_fn)
         print 'wrote', args.dtc_fn
+
+    elif args.model == 'texture':
+        print 'training texture model ...'
+        sm = ShapeModel.load(args.shp_fn)
+        model = TextureModel.train(data.T, muct.iterimages(mirror=True),
+                                   sm.get_shape(200, 150, 150), args.frac, args.kmax)
+        print 'retained:', model.num_modes(), 'modes'
+        model.save(args.txt_fn)
+        print 'wrote', args.txt_fn
