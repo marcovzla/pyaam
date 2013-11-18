@@ -20,7 +20,7 @@ class TextureModel(object):
         G = get_data_matrix(imgs, lmks, ref)
         Gm = G.mean(axis=1)
         G -= Gm[:,np.newaxis]
-        N = len(lmks)
+        N = lmks.shape[1]
         D = pca(G, frac, kmax)
         # normalize eigenvectors
         for i in xrange(D.shape[1]):
