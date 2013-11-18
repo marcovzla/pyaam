@@ -27,3 +27,4 @@ View models:
 ## References
 
 - J. Saragih, "Non-rigid Face Tracking". In Mastering OpenCV with Practical Computer Vision Projects. PACKT, Oct 2012.
+- M.B. Stegmann, "Active appearance models: Theory, extensions and cases". Master Thesis. 2nd edition. Informatics and Mathematical Modelling, Technical University of Denmark. Aug 2000.
