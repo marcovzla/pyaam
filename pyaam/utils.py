@@ -18,15 +18,16 @@ def get_vertices(pts):
 
 def normalize(img, aabb):
     x, y, w, h = aabb
-    img[y:y+h,x:x+w,0] = cv2.equalizeHist(img[y:y+h,x:x+w,0])
-    img[y:y+h,x:x+w,1] = cv2.equalizeHist(img[y:y+h,x:x+w,1])
-    img[y:y+h,x:x+w,2] = cv2.equalizeHist(img[y:y+h,x:x+w,2])
+    # .copy() required on linux
+    img[y:y+h,x:x+w,0] = cv2.equalizeHist(img[y:y+h,x:x+w,0].copy())
+    img[y:y+h,x:x+w,1] = cv2.equalizeHist(img[y:y+h,x:x+w,1].copy())
+    img[y:y+h,x:x+w,2] = cv2.equalizeHist(img[y:y+h,x:x+w,2].copy())
     return img
 
 def get_mask(pts, shape):
     pts = pts.astype('int32')
     mask = np.zeros(shape, dtype='uint8')
-    hull = cv2.convexHull(pts[:,np.newaxis])
+    hull = cv2.convexHull(pts[:,np.newaxis].copy())  # .copy() required on linux
     hull = hull.reshape((hull.shape[0], hull.shape[2]))
     cv2.fillConvexPoly(mask, hull, 255)
     return mask.astype(bool)
