@@ -50,16 +50,10 @@ def pca(M, frac, kmax):
     enough_samples = M.shape[1] > M.shape[0]  # each column is a sample
     # covariance matrix
     C = M.dot(M.T) if enough_samples else M.T.dot(M) / M.shape[1]
-    u, s, vt = np.linalg.svd(C)
+    u, s, v = np.linalg.svd(C)
     if not enough_samples:
         u = M.dot(u)
-    vsum = s[:kmax].sum()
-    v = k = 0
-    while True:
-        v += s[k]
-        k += 1
-        # retain fraction `frac` of the variance
-        if v/vsum >= frac:
-            break
-    k = min(k, kmax)
+    s = s[:kmax]
+    p = s.cumsum() / s.sum()
+    k = p[p < frac].size
     return u[:,:k]
