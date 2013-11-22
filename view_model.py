@@ -10,14 +10,13 @@ import numpy as np
 from pyaam.shape import ShapeModel
 from pyaam.patches import PatchesModel
 from pyaam.texture import TextureModel
-from pyaam.detector import FaceDetector
 from pyaam.draw import Color, draw_string, draw_muct_face, draw_texture
 
 
 
 def parse_args():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('model', choices=['shape', 'patches', 'detector', 'texture'], help='model name')
+    parser.add_argument('model', choices=['shape', 'patches', 'texture'], help='model name')
     parser.add_argument('--scale', type=float, default=200, help='scale')
     parser.add_argument('--tranx', type=int, default=150, help='translate x')
     parser.add_argument('--trany', type=int, default=150, help='translate y')
@@ -26,7 +25,6 @@ def parse_args():
     parser.add_argument('--face-width', type=int, default=200, help='face width')
     parser.add_argument('--shp-fn', default='data/shape.npz', help='shape model filename')
     parser.add_argument('--ptc-fn', default='data/patches.npz', help='patches model filename')
-    parser.add_argument('--dtc-fn', default='data/detector.npz', help='face detector filename')
     parser.add_argument('--txt-fn', default='data/texture.npz', help='texture model filename')
     return parser.parse_args()
 
@@ -83,21 +81,6 @@ def view_texture_model(shp_fn, txt_fn, scale, tranx, trany, width, height):
                 cv2.imshow('texture model', img)
                 if cv2.waitKey(10) == 27:
                     sys.exit()
-
-
-
-def view_face_detector(dtc_fn):
-    detector = FaceDetector.load(dtc_fn)
-    cam = cv2.VideoCapture(0)
-    if not cam.isOpened():
-        sys.exit('no camera')
-    while True:
-        val, img = cam.read()
-        p = detector.detect(img)
-        draw_muct_face(img, p)
-        cv2.imshow('face detector', img)
-        if cv2.waitKey(10) == 27:
-            break
 
 
 
@@ -162,9 +145,6 @@ if __name__ == '__main__':
 
     elif args.model == 'patches':
         view_patches_model(args.ptc_fn, args.shp_fn, args.face_width)
-
-    elif args.model == 'detector':
-        view_face_detector(args.dtc_fn)
 
     elif args.model == 'texture':
         view_texture_model(args.shp_fn, args.txt_fn, 200, 150, 150, args.width, args.height)
