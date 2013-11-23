@@ -17,12 +17,25 @@ Train models:
     ./train_model.py shape
     ./train_model.py patches
     ./train_model.py detector
+    ./train_model.py texture
+    ./train_model.py combined
 
 View models:
 
     ./view_model.py shape
     ./view_model.py patches
-    ./view_model.py detector
+    ./view_model.py texture
+    ./view_model.py combined
+
+View face detector on webcam:
+
+    ./view_face.py detector
+
+View face tracker (patches):
+
+    ./view_face.py tracker
+
+Face tracker using AAMs coming soon!
 
 ## References
 
