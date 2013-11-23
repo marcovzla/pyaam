@@ -41,9 +41,7 @@ class CombinedModel(object):
             # ignore first 4 shape parameters
             A[:,i] = np.concatenate((Ws.dot(sparams[4:]), tparams))
 
-        # NOTE for some reason numpy.linalg.svd fails to converge
-        # so we need to use cv2.SVDecomp
-        D = pca(A, frac, kmax, use_cv2=True)
+        D = pca(A, frac, kmax)
 
         # compute variance
         Q = pow(D.T.dot(A), 2)
