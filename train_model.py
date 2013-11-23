@@ -6,13 +6,14 @@ from pyaam.muct import MuctDataset
 from pyaam.shape import ShapeModel
 from pyaam.patches import PatchesModel
 from pyaam.texture import TextureModel
+from pyaam.combined import CombinedModel
 from pyaam.detector import FaceDetector
 
 
 
 def parse_args():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('model', choices=['shape', 'patches', 'detector', 'texture'], help='model name')
+    parser.add_argument('model', choices=['shape', 'patches', 'detector', 'texture', 'combined'], help='model name')
     parser.add_argument('--frac', type=float, default=0.99, help='fraction of variation')
     parser.add_argument('--kmax', type=int, default=20, help='maximum modes')
     parser.add_argument('--width', type=int, default=100, help='face width')
@@ -27,6 +28,7 @@ def parse_args():
     parser.add_argument('--ptc-fn', default='data/patches.npz', help='patches model filename')
     parser.add_argument('--dtc-fn', default='data/detector.npz', help='face detector filename')
     parser.add_argument('--txt-fn', default='data/texture.npz', help='texture model filename')
+    parser.add_argument('--cmb-fn', default='data/combined.npz', help='combined model filename')
     return parser.parse_args()
 
 
@@ -37,6 +39,7 @@ if __name__ == '__main__':
     muct = MuctDataset()
     muct.load(clean=True)
     data = muct.all_lmks()
+    imgs = muct.iterimages(mirror=True)
     print 'training samples:', len(data)
 
     if args.model == 'shape':
@@ -48,10 +51,10 @@ if __name__ == '__main__':
 
     elif args.model == 'patches':
         print 'reading images ...'
-        images = list(muct.iterimages(mirror=True))
+        imgs = list(imgs)
         print 'training patches model ...'
         sm = ShapeModel.load(args.shp_fn)
-        model = PatchesModel.train(data.T, images, sm.get_shape(args.face_width), args.psize,
+        model = PatchesModel.train(data.T, imgs, sm.get_shape(args.face_width), args.psize,
                                    args.ssize, args.var, args.lmbda, args.mu, args.nsamples)
         model.save(args.ptc_fn)
         print 'wrote', args.ptc_fn
@@ -59,15 +62,24 @@ if __name__ == '__main__':
     elif args.model == 'detector':
         print 'training face detector ...'
         sm = ShapeModel.load(args.shp_fn)
-        model = FaceDetector.train(data.T, muct.iterimages(mirror=True), sm.get_shape())
+        model = FaceDetector.train(data.T, imgs, sm.get_shape())
         model.save(args.dtc_fn)
         print 'wrote', args.dtc_fn
 
     elif args.model == 'texture':
         print 'training texture model ...'
         sm = ShapeModel.load(args.shp_fn)
-        model = TextureModel.train(data.T, muct.iterimages(mirror=True),
-                                   sm.get_shape(200, 150, 150), args.frac, args.kmax)
+        ref = sm.get_shape(200, 150, 150)
+        model = TextureModel.train(data.T, imgs, ref, args.frac, args.kmax)
         print 'retained:', model.num_modes(), 'modes'
         model.save(args.txt_fn)
         print 'wrote', args.txt_fn
+
+    elif args.model == 'combined':
+        print 'training combined model ...'
+        sm = ShapeModel.load(args.shp_fn)
+        ref = sm.get_shape(200, 150, 150)
+        model = CombinedModel.train(data.T, imgs, ref, args.frac, args.kmax)
+        print 'retained:', model.num_modes(), 'modes'
+        model.save(args.cmb_fn)
+        print 'wrote', args.cmb_fn

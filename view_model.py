@@ -10,13 +10,16 @@ import numpy as np
 from pyaam.shape import ShapeModel
 from pyaam.patches import PatchesModel
 from pyaam.texture import TextureModel
+from pyaam.combined import CombinedModel
 from pyaam.draw import Color, draw_string, draw_muct_face, draw_texture
+from pyaam.utils import get_vertices
+from pyaam.texturemapper import TextureMapper
 
 
 
 def parse_args():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('model', choices=['shape', 'patches', 'texture'], help='model name')
+    parser.add_argument('model', choices=['shape', 'patches', 'texture', 'combined'], help='model name')
     parser.add_argument('--scale', type=float, default=200, help='scale')
     parser.add_argument('--tranx', type=int, default=150, help='translate x')
     parser.add_argument('--trany', type=int, default=150, help='translate y')
@@ -26,6 +29,7 @@ def parse_args():
     parser.add_argument('--shp-fn', default='data/shape.npz', help='shape model filename')
     parser.add_argument('--ptc-fn', default='data/patches.npz', help='patches model filename')
     parser.add_argument('--txt-fn', default='data/texture.npz', help='texture model filename')
+    parser.add_argument('--cmb-fn', default='data/combined.npz', help='combined model filename')
     return parser.parse_args()
 
 
@@ -79,6 +83,42 @@ def view_texture_model(shp_fn, txt_fn, scale, tranx, trany, width, height):
                 t = tmodel.calc_texture(p)
                 draw_texture(img, t, ref)
                 cv2.imshow('texture model', img)
+                if cv2.waitKey(10) == 27:
+                    sys.exit()
+
+
+
+def view_combined_model(shp_fn, txt_fn, cmb_fn, scale, tranx, trany, width, height):
+    img = np.empty((height, width, 3), dtype='uint8')
+    cv2.namedWindow('combined model')
+    tm = TextureMapper(img.shape[1], img.shape[0])
+    smodel = ShapeModel.load(shp_fn)
+    tmodel = TextureModel.load(txt_fn)
+    cmodel = CombinedModel.load(cmb_fn)
+    vals = genvals()
+    params = smodel.get_params(scale, tranx, trany)
+    ref = smodel.calc_shape(params)
+    ref = ref.reshape((ref.size//2, 2))
+    verts = get_vertices(ref)
+    while True:
+        for k in xrange(cmodel.num_modes()):
+            for v in vals:
+                p = np.zeros(cmodel.num_modes())
+                p[k] = v * 3 * np.sqrt(cmodel.variance[k])
+                sparams, tparams = cmodel.calc_shp_tex_params(p, smodel.num_modes())
+                params[4:] = sparams
+
+                shp = smodel.calc_shape(params)
+                shp = shp.reshape(ref.shape)
+                t = tmodel.calc_texture(tparams)
+                img[:] = 0
+                draw_texture(img, t, ref)
+                warped = tm.warp_triangles(img, ref[verts], shp[verts])
+
+                s = 'mode: %d, val: %f sd' % (k, v*3)
+                draw_string(warped, s)
+                cv2.imshow('combined model', warped)
+
                 if cv2.waitKey(10) == 27:
                     sys.exit()
 
@@ -148,3 +188,6 @@ if __name__ == '__main__':
 
     elif args.model == 'texture':
         view_texture_model(args.shp_fn, args.txt_fn, 200, 150, 150, args.width, args.height)
+
+    elif args.model == 'combined':
+        view_combined_model(args.shp_fn, args.txt_fn, args.cmb_fn, 200, 150, 150, args.width, args.height)

@@ -47,7 +47,7 @@ class TextureModel(object):
         return t.clip(0, 255)  # clamp pixels intensities
 
     def calc_params(self, img, lmk, ref, tm):
-        ref = ref.astype('int32')
+        ref = ref.reshape((ref.size//2, 2)).astype('int32')
         src = lmk.reshape(ref.shape)
         img = normalize(img, get_aabb(src))
         mask = get_mask(ref, img.shape[:2])
