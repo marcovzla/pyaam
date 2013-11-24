@@ -116,7 +116,8 @@ def train_patches(lmks, imgs, ref, psize, ssize, var=1.0, lmbda=1e-6, mu_init=1e
             I = cv2.warpAffine(im, A, wsize, flags=cv2.INTER_LINEAR+cv2.WARP_INVERSE_MAP)
             images.append(I)
 
-        patches.append(train_patch(images, psize, var, lmbda, mu_init, nsamples))
+        patch = train_patch(images, psize, var, lmbda, mu_init, nsamples)
+        patches.append(patch)
 
     return np.array(patches)
 
