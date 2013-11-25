@@ -9,6 +9,7 @@ from scipy.spatial import Delaunay
 
 
 def get_aabb(pts):
+    """axis-aligned minimum bounding box"""
     x, y = np.floor(pts.min(axis=0)).astype(int)
     w, h = np.ceil(pts.ptp(axis=0)).astype(int)
     return x, y, w, h
