@@ -6,7 +6,7 @@ from __future__ import division
 import sys
 import cv2
 import argparse
-from pyaam.draw import draw_muct_face
+from pyaam.draw import draw_muct_shape
 from pyaam.tracker import FaceTracker
 from pyaam.detector import FaceDetector
 
@@ -28,7 +28,7 @@ def view_face_tracker():
     while True:
         val, img = cam.read()
         tracker.track(img)
-        draw_muct_face(img, tracker.points)
+        draw_muct_shape(img, tracker.points)
         cv2.imshow('face tracker', img)
         key = cv2.waitKey(10)
         if key == 27:
@@ -46,7 +46,7 @@ def view_face_detector(detector_fn):
     while True:
         val, img = cam.read()
         p = detector.detect(img)
-        draw_muct_face(img, p)
+        draw_muct_shape(img, p)
         cv2.imshow('face detector', img)
         if cv2.waitKey(10) == 27:
             break

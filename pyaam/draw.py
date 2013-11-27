@@ -48,7 +48,7 @@ def draw_polygons(img, polygons, color):
     for p in polygons:
         cv2.polylines(img, [p], True, color)
 
-def draw_muct_face(img, points):
+def draw_muct_shape(img, points):
     # convert vector of points into matrix of size (n_pts, 2)
     pts = points.reshape((len(points)//2, 2))
     draw_pairs(img, pts, MuctDataset.PAIRS, Color.red)

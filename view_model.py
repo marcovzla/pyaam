@@ -11,7 +11,7 @@ from pyaam.shape import ShapeModel
 from pyaam.patches import PatchesModel
 from pyaam.texture import TextureModel
 from pyaam.combined import CombinedModel
-from pyaam.draw import Color, draw_string, draw_muct_face, draw_texture
+from pyaam.draw import Color, draw_string, draw_muct_shape, draw_texture
 from pyaam.utils import get_vertices
 from pyaam.texturemapper import TextureMapper
 
@@ -57,7 +57,7 @@ def view_shape_model(shp_fn, scale, tranx, trany, width, height):
                 s = 'mode: %d, val: %f sd' % (k-3, v*3)
                 draw_string(img, s)
                 q = smodel.calc_shape(p)
-                draw_muct_face(img, q)
+                draw_muct_shape(img, q)
                 cv2.imshow('shape model', img)
                 if cv2.waitKey(10) == 27:
                     sys.exit()
