@@ -4,8 +4,9 @@ from __future__ import division
 
 import cv2
 import cv2.cv as cv
+import numpy as np
 from pyaam.muct import MuctDataset
-from pyaam.utils import get_mask
+from pyaam.utils import get_mask, get_vertices
 
 
 
@@ -59,3 +60,9 @@ def draw_texture(img, texture, points):
     mask = get_mask(points, img.shape[:2])
     img[mask] = texture
     return img
+
+def draw_face(img, points, texture, ref_shape, tm):
+    verts = get_vertices(ref_shape)
+    img_texture = np.zeros(img.shape, dtype='uint8')
+    draw_texture(img_texture, texture, ref_shape)
+    return tm.warp_triangles(img_texture, ref_shape[verts], points[verts], img)
