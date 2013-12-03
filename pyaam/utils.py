@@ -19,6 +19,8 @@ def get_vertices(pts):
 
 def normalize(img, aabb):
     x, y, w, h = aabb
+    # work on image copy
+    img = img.copy()
     # .copy() required on linux
     img[y:y+h,x:x+w,0] = cv2.equalizeHist(img[y:y+h,x:x+w,0].copy())
     img[y:y+h,x:x+w,1] = cv2.equalizeHist(img[y:y+h,x:x+w,1].copy())
