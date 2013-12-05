@@ -51,7 +51,7 @@ if __name__ == '__main__':
         pts = lmks.reshape((len(lmks)//2, 2))
         aabb = get_aabb(pts)
         if args.normalize:
-            normalize(img, aabb)
+            img = normalize(img, aabb)
         orig = img.copy()
         if args.show_triangles:
             draw_polygons(img, pts[verts], Color.blue)
