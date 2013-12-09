@@ -3,7 +3,7 @@
 from __future__ import division
 
 import numpy as np
-from pyaam.utils import pca
+from pyaam.utils import pca, gram_schmid
 
 
 
@@ -156,16 +156,3 @@ def calc_rigid_basis(X):
     R[1::2,3] = 1
 
     return gram_schmid(R)
-
-def gram_schmid(V):
-    """Gram-Schmid orthonormalization (in-place)"""
-    n = V.shape[1]
-    for i in xrange(n):
-        for j in xrange(i):
-            # subtract projection
-            V[:,i] -= np.dot(V[:,i], V[:,j]) * V[:,j]
-        # normalize
-        V[:,i] /= np.linalg.norm(V[:,i])
-    # orthonormalization was performed in-place
-    # but we return V for convenience
-    return V

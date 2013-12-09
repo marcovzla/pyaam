@@ -61,3 +61,16 @@ def pca(M, frac, kmax=None):
     p = s.cumsum() / s.sum()
     k = p[p < frac].size
     return u[:,:k]
+
+def gram_schmid(V):
+    """Gram-Schmid orthonormalization (in-place)"""
+    n = V.shape[1]
+    for i in xrange(n):
+        for j in xrange(i):
+            # subtract projection
+            V[:,i] -= np.dot(V[:,i], V[:,j]) * V[:,j]
+        # normalize
+        V[:,i] /= np.linalg.norm(V[:,i])
+    # orthonormalization was performed in-place
+    # but we return V for convenience
+    return V
