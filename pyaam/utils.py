@@ -50,6 +50,7 @@ def warp_triangles(img, src, dst):
 
 def pca(M, frac, kmax=None):
     """principal component analysis"""
+    # see Stegmann's thesis section 5.6.1 for details
     enough_samples = M.shape[1] > M.shape[0]  # each column is a sample
     # covariance matrix
     C = (M.dot(M.T) if enough_samples else M.T.dot(M)) / M.shape[1]
