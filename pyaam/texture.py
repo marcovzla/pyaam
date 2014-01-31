@@ -42,6 +42,9 @@ class TextureModel(object):
     def num_modes(self):
         return self.model.shape[1]
 
+    def texture_vector_size(self):
+        return self.model.shape[0]
+
     def calc_texture(self, params):
         t = self.mean + self.model.dot(params)
         return t.clip(0, 255)  # clamp pixels intensities

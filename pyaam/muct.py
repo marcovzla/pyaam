@@ -122,6 +122,13 @@ class MuctDataset(object):
         self.landmarks = self.landmarks[keep]
         self.landmarks_flip = self.landmarks_flip[keep]
 
+    def ignore(self, name):
+        keep = self.names != name
+        self.names = self.names[keep]
+        self.tags = self.tags[keep]
+        self.landmarks = self.landmarks[keep]
+        self.landmarks_flip = self.landmarks_flip[keep]
+
     def image(self, name, flip=False):
         img = cv2.imread(self._img_fname % name)
         return cv2.flip(img, 1) if flip else img
