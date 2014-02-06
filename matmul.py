@@ -58,7 +58,7 @@ def dot(a, b, out=None):
 
     l, m, n = a.shape[0], a.shape[1], b.shape[1]
 
-    if out:
+    if out is not None:
         if out.shape != (l, n):
             raise (ValueError, "`out` array does not have the correct shape")
     else:
