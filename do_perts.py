@@ -42,14 +42,12 @@ def experiments(images, landmarks, smodel, tmodel, ref_shape, fout):
     t_vec_sz = tmodel.texture_vector_size()
 
     h5 = tb.openFile(fout, mode='w', title='perturbations')
-    filters = tb.Filters(complevel=9, complib='blosc')
-    # NOTE this matices are transposed
-    # P.shape should be (n_params, total_perts)
-    # R.shape should be (t_vec_sz, total_perts)
+    filters = tb.Filters(complevel=5, complib='blosc')
     P = h5.createCArray(h5.root, 'perturbations', tb.Float64Atom(),
-            shape=(total_perts, n_params), filters=filters)
+            shape=(n_params, total_perts), filters=filters)
     R = h5.createCArray(h5.root, 'residuals', tb.Float64Atom(),
-            shape=(total_perts, t_vec_sz), filters=filters)
+            shape=(t_vec_sz, total_perts), filters=filters,
+            chunkshape=(2048, 128))
 
     for i in xrange(len(landmarks)):
         # get image and corresponding landmarks
@@ -63,8 +61,8 @@ def experiments(images, landmarks, smodel, tmodel, ref_shape, fout):
 
         perturbations = perturbator.perturbations(s_params, t_params)
         for j,pert in enumerate(perturbations):
-            row = n_perts * i + j
-            print 'perturbation {:,} of {:,}'.format(row+1, total_perts)
+            col = n_perts * i + j
+            print 'perturbation {:,} of {:,}'.format(col+1, total_perts)
             s = pert[:split]
             t = pert[split:]
             x_image = smodel.calc_shape(s)
@@ -74,8 +72,8 @@ def experiments(images, landmarks, smodel, tmodel, ref_shape, fout):
             perturbation = pert - params
             residual = g_image - g_model
 
-            P[row] = perturbation
-            R[row] = residual
+            P[:,col] = perturbation
+            R[:,col] = residual
 
     h5.close()
 
