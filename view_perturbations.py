@@ -62,8 +62,6 @@ def experiments(images, landmarks, smodel, tmodel, ref_shape):
                 break
             elif key == 27:
                 sys.exit()
-    P = R = None
-    return P, R
 
 
 
@@ -91,5 +89,4 @@ if __name__ == '__main__':
     ref = smodel.calc_shape(params)
     ref = ref.reshape((ref.size//2, 2))
 
-    P, R = experiments(imgs, data, smodel, tmodel, ref)
-    # np.savez('data/experiments.npz', P=P, R=R)
+    experiments(imgs, data, smodel, tmodel, ref)
