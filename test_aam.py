@@ -13,6 +13,7 @@ from pyaam.shape import ShapeModel
 from pyaam.texture import TextureModel
 from pyaam.detector import FaceDetector
 from pyaam.texturemapper import TextureMapper
+from view_perturbations import sample_texture
 
 
 
@@ -39,9 +40,39 @@ def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
 
         key = cv2.waitKey()
         if key == ord(' '):
+            pass
+        elif key == ord('n'):
             continue
         elif key == 27:
             sys.exit()
+
+        while True:
+            s = params[:split]
+            t = params[split:]
+            shape = smodel.calc_shape(s)
+            shape = shape.reshape((shape.size//2, 2))
+            texture = tmodel.calc_texture(t)
+            g_image = sample_texture(img, shape, ref_shape, tm)
+            residual = g_image - texture
+
+            pert = R.dot(residual)
+            params -= pert
+
+            s = params[:split]
+            t = params[split:]
+            shape = smodel.calc_shape(s)
+            shape = shape.reshape((shape.size//2, 2))
+            texture = tmodel.calc_texture(t) 
+            warped = draw_face(img, shape, texture, ref_shape, tm)
+            cv2.imshow('fitted', warped)
+
+            key = cv2.waitKey()
+            if key == ord(' '):
+                continue
+            elif key == ord('n'):
+                break
+            elif key == 27:
+                sys.exit()
 
 
 
