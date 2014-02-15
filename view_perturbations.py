@@ -10,21 +10,11 @@ import cv2
 
 from pyaam.muct import MuctDataset
 from pyaam.draw import draw_polygons, draw_texture, draw_face
-from pyaam.utils import get_vertices, get_aabb, normalize, get_mask
+from pyaam.utils import get_vertices, sample_texture
 from pyaam.shape import ShapeModel
 from pyaam.texture import TextureModel
 from pyaam.texturemapper import TextureMapper
 from pyaam.perturbator import Perturbator
-
-
-
-def sample_texture(img, pts, ref, tm):
-    """returns a texture vector"""
-    img = normalize(img, get_aabb(pts))
-    mask = get_mask(ref, img.shape[:2])
-    verts = get_vertices(ref)
-    warp = tm.warp_triangles(img, pts[verts], ref[verts])
-    return warp[mask].ravel()
 
 
 
@@ -59,7 +49,7 @@ def experiments(images, landmarks, smodel, tmodel, ref_shape):
             t = pert[split:]
             x_image = smodel.calc_shape(s)
             x_image = x_image.reshape((x_image.size//2, 2))
-            g_image = sample_texture(img, x_image, ref_shape, tm)
+            g_image = sample_texture(img, x_image, ref_shape, tm.warp_triangles)
             g_model = tmodel.calc_texture(t)
             perturbation = pert - params
             residual = g_image - g_model

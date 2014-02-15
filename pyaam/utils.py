@@ -75,3 +75,12 @@ def gram_schmid(V):
     # orthonormalization was performed in-place
     # but we return V for convenience
     return V
+
+def sample_texture(img, pts, ref, warp_triangles):
+    """returns a texture vector"""
+    aabb = get_aabb(pts)
+    img = normalize(img, aabb)
+    mask = get_mask(ref, img.shape[:2])
+    verts = get_vertices(ref)
+    warp = warp_triangles(img, pts[verts], ref[verts])
+    return warp[mask].ravel()

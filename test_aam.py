@@ -13,7 +13,7 @@ from pyaam.shape import ShapeModel
 from pyaam.texture import TextureModel
 from pyaam.detector import FaceDetector
 from pyaam.texturemapper import TextureMapper
-from view_perturbations import sample_texture
+from pyaam.utils import sample_texture
 
 
 
@@ -57,7 +57,7 @@ def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
             shape = smodel.calc_shape(s)
             shape = shape.reshape((shape.size//2, 2))
             texture = tmodel.calc_texture(t)
-            g_image = sample_texture(img, shape, ref_shape, tm)
+            g_image = sample_texture(img, shape, ref_shape, tm.warp_triangles)
             residual = g_image - texture
 
             pert = R.dot(residual)
