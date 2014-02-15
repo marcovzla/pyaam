@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 
 from pyaam.muct import MuctDataset
-from pyaam.draw import draw_face
+from pyaam.draw import draw_face, draw_muct_shape
 from pyaam.utils import get_vertices
 from pyaam.shape import ShapeModel
 from pyaam.texture import TextureModel
@@ -20,6 +20,7 @@ from view_perturbations import sample_texture
 def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
     cv2.namedWindow('original')
     cv2.namedWindow('fitted')
+    cv2.namedWindow('shape')
     tm = TextureMapper(480, 640)
     tri = get_vertices(ref_shape)
     split = smodel.num_modes() + 4
@@ -37,6 +38,10 @@ def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
         texture = tmodel.calc_texture(t_params)
         warped = draw_face(img, shape, texture, ref_shape, tm)
         cv2.imshow('fitted', warped)
+
+        img2 = img.copy()
+        draw_muct_shape(img2, shape.ravel())
+        cv2.imshow('shape', img2)
 
         key = cv2.waitKey()
         if key == ord(' '):
@@ -65,6 +70,10 @@ def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
             texture = tmodel.calc_texture(t) 
             warped = draw_face(img, shape, texture, ref_shape, tm)
             cv2.imshow('fitted', warped)
+
+            img2 = img.copy()
+            draw_muct_shape(img2, shape.ravel())
+            cv2.imshow('shape', img2)
 
             key = cv2.waitKey()
             if key == ord(' '):
