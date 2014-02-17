@@ -15,6 +15,18 @@ from pyaam.detector import FaceDetector
 from pyaam.texturemapper import TextureMapper
 from pyaam.utils import sample_texture
 
+MAX_ITER = 10
+
+
+def get_instance(params, smodel, tmodel):
+    split = smodel.num_modes() + 4
+    s = params[:split]
+    t = params[split:]
+    shape = smodel.calc_shape(s)
+    shape = shape.reshape((shape.size // 2, 2))
+    texture = tmodel.calc_texture(t)
+    return shape, texture
+
 
 
 def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
@@ -28,14 +40,17 @@ def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
         img = next(images)
         cv2.imshow('original', img)
         lmks = landmarks[i].reshape(ref_shape.shape)
+
+        # detect face
         pts = detector.detect(img)
+        # get params for detected face shape
         s_params = smodel.calc_params(pts)
+        # mean texture
         t_params = np.zeros(tmodel.num_modes())
+        # concatenate parameters
         params = np.concatenate((s_params, t_params))
 
-        shape = smodel.calc_shape(s_params)
-        shape = shape.reshape((shape.size//2, 2))
-        texture = tmodel.calc_texture(t_params)
+        shape, texture = get_instance(params, smodel, tmodel)
         warped = draw_face(img, shape, texture, ref_shape, tm)
         cv2.imshow('fitted', warped)
 
@@ -51,23 +66,44 @@ def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
         elif key == 27:
             sys.exit()
 
-        while True:
-            s = params[:split]
-            t = params[split:]
-            shape = smodel.calc_shape(s)
-            shape = shape.reshape((shape.size//2, 2))
-            texture = tmodel.calc_texture(t)
+        shape, texture = get_instance(params, smodel, tmodel)
+        g_image = sample_texture(img, shape, ref_shape, tm.warp_triangles)
+        # compute residual
+        residual = g_image - texture
+        # evaluate error
+        E0 = np.dot(residual, residual)
+        # predict model displacements
+        pert = R.dot(residual)
+
+        key = cv2.waitKey()
+        if key == ord(' '):
+            pass
+        elif key == ord('n'):
+            continue
+        elif key == 27:
+            sys.exit()
+
+        for i in xrange(MAX_ITER):
+            shape, texture = get_instance(params, smodel, tmodel)
             g_image = sample_texture(img, shape, ref_shape, tm.warp_triangles)
+            # compute residual
             residual = g_image - texture
-
+            # predict model displacements
             pert = R.dot(residual)
-            params -= pert
+            for alpha in (1.5, 1, 0.5, 0.25, 0.125):
+                new_params = params - alpha * pert
 
-            s = params[:split]
-            t = params[split:]
-            shape = smodel.calc_shape(s)
-            shape = shape.reshape((shape.size//2, 2))
-            texture = tmodel.calc_texture(t) 
+                shape, texture = get_instance(new_params, smodel, tmodel)
+                g_image = sample_texture(img, shape, ref_shape, tm.warp_triangles)
+                residual = g_image - texture
+                Ek = np.dot(residual, residual)
+
+                if Ek < E0:
+                    params = new_params
+                    E0 = Ek
+                    break
+
+            shape, texture = get_instance(params, smodel, tmodel)
             warped = draw_face(img, shape, texture, ref_shape, tm)
             cv2.imshow('fitted', warped)
 
