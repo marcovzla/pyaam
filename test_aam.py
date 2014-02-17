@@ -19,7 +19,7 @@ MAX_ITER = 10
 
 
 def get_instance(params, smodel, tmodel):
-    split = smodel.num_modes() + 4
+    split = smodel.num_params()
     s = params[:split]
     t = params[split:]
     shape = smodel.calc_shape(s)
@@ -35,7 +35,6 @@ def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
     cv2.namedWindow('shape')
     tm = TextureMapper(480, 640)
     tri = get_vertices(ref_shape)
-    split = smodel.num_modes() + 4
     for i in xrange(len(landmarks)):
         img = next(images)
         cv2.imshow('original', img)

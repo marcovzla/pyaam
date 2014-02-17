@@ -49,6 +49,9 @@ class ShapeModel(object):
     def save(self, fname):
         np.savez(fname, model=self.model, variance=self.variance)
 
+    def num_params(self):
+        return self.model.shape[1]
+
     def num_modes(self):
         return self.model.shape[1] - 4
 
