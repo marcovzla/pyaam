@@ -10,7 +10,7 @@ print 'opening file ...'
 h5 = tb.openFile('/media/disk2/perturbations.h5', mode='r')
 print 'get G ...'
 G = h5.root.residuals
-print 'read P ...'
+print 'get P copy ...'
 P = h5.root.perturbations[:]
 print 'P pseudoinverse ...'
 P_pinv = np.linalg.pinv(P)
