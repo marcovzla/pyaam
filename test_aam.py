@@ -75,14 +75,6 @@ def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
         # predict model displacements
         pert = R.dot(residual)
 
-        key = cv2.waitKey()
-        if key == ord(' '):
-            pass
-        elif key == ord('n'):
-            continue
-        elif key == 27:
-            sys.exit()
-
         for i in xrange(MAX_ITER):
             shape, texture = get_instance(params, smodel, tmodel)
             g_image = sample_texture(img, shape, ref_shape, tm.warp_triangles)
