@@ -1,3 +1,4 @@
 *.pyc
 *.npz
+*.h5
 data/muct
