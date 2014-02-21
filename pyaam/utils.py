@@ -53,7 +53,8 @@ def pca(M, frac, kmax=None):
     # see Stegmann's thesis section 5.6.1 for details
     enough_samples = M.shape[1] > M.shape[0]  # each column is a sample
     # covariance matrix
-    C = (M.dot(M.T) if enough_samples else M.T.dot(M)) / M.shape[1]
+    C = M.dot(M.T) if enough_samples else M.T.dot(M)
+    C /= M.shape[1]
     u, s, v = np.linalg.svd(C)
     if not enough_samples:
         u = M.dot(u)
