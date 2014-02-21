@@ -49,13 +49,13 @@ class TextureModel(object):
         t = self.mean + self.model.dot(params)
         return t.clip(0, 255)  # clamp pixels intensities
 
-    def calc_params(self, img, lmk, ref, tm):
+    def calc_params(self, img, lmk, ref, warp_triangles):
         ref = ref.reshape((ref.size//2, 2)).astype('int32')
         src = lmk.reshape(ref.shape)
         img = normalize(img, get_aabb(src))
         mask = get_mask(ref, img.shape[:2])
         verts = get_vertices(ref)
-        warp = tm.warp_triangles(img, src[verts], ref[verts])
+        warp = warp_triangles(img, src[verts], ref[verts])
         t = warp[mask].ravel() - self.mean
         p = self.model.T.dot(t)
         # clamp

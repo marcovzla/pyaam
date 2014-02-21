@@ -56,7 +56,7 @@ def experiments(images, landmarks, smodel, tmodel, ref_shape, fout):
         pts = lmks.reshape(ref_shape.shape)
         # get shape and texture model parameters for current example
         s_params = smodel.calc_params(lmks)
-        t_params = tmodel.calc_params(img, lmks, ref_shape, tm)
+        t_params = tmodel.calc_params(img, lmks, ref_shape, tm.warp_triangles)
         params = np.concatenate((s_params, t_params))
 
         perturbations = perturbator.perturbations(s_params, t_params)

@@ -37,7 +37,7 @@ class CombinedModel(object):
             img = next(imgs)
             lmk = lmks[:,i]
             sparams = smodel.calc_params(lmk)
-            tparams = tmodel.calc_params(img, lmk, ref, tm)
+            tparams = tmodel.calc_params(img, lmk, ref, tm.warp_triangles)
             # ignore first 4 shape parameters
             A[:,i] = np.concatenate((Ws.dot(sparams[4:]), tparams))
 
