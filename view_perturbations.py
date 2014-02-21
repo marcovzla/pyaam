@@ -41,7 +41,7 @@ def experiments(images, landmarks, smodel, tmodel, ref_shape):
         shape = smodel.calc_shape(s_params)
         shape = shape.reshape((shape.size//2, 2))
         texture = tmodel.calc_texture(t_params)
-        warped = draw_face(img, shape, texture, ref_shape, tm)
+        warped = draw_face(img, shape, texture, ref_shape, tm.warp_triangles)
         cv2.imshow('model', warped)
 
         for pert in perturbator.perturbations(s_params, t_params):
@@ -54,7 +54,7 @@ def experiments(images, landmarks, smodel, tmodel, ref_shape):
             perturbation = pert - params
             residual = g_image - g_model
 
-            warped = draw_face(img, x_image, g_model, ref_shape, tm)
+            warped = draw_face(img, x_image, g_model, ref_shape, tm.warp_triangles)
             cv2.imshow('perturbed', warped)
 
             key = cv2.waitKey()

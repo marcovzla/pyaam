@@ -61,8 +61,8 @@ def draw_texture(img, texture, points):
     img[mask] = texture
     return img
 
-def draw_face(img, points, texture, ref_shape, tm):
+def draw_face(img, points, texture, ref_shape, warp_triangles):
     verts = get_vertices(ref_shape)
     img_texture = np.zeros(img.shape, dtype='uint8')
     draw_texture(img_texture, texture, ref_shape)
-    return tm.warp_triangles(img_texture, ref_shape[verts], points[verts], img)
+    return warp_triangles(img_texture, ref_shape[verts], points[verts], img)

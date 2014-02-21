@@ -50,7 +50,7 @@ def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
         params = np.concatenate((s_params, t_params))
 
         shape, texture = get_instance(params, smodel, tmodel)
-        warped = draw_face(img, shape, texture, ref_shape, tm)
+        warped = draw_face(img, shape, texture, ref_shape, tm.warp_triangles)
         cv2.imshow('fitted', warped)
 
         img2 = img.copy()
@@ -95,7 +95,7 @@ def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
                     break
 
             shape, texture = get_instance(params, smodel, tmodel)
-            warped = draw_face(img, shape, texture, ref_shape, tm)
+            warped = draw_face(img, shape, texture, ref_shape, tm.warp_triangles)
             cv2.imshow('fitted', warped)
 
             img2 = img.copy()
