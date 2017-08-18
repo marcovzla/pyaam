@@ -18,12 +18,14 @@ class TextureModel(object):
     @classmethod
     def train(cls, lmks, imgs, ref, frac, kmax):
         G = get_data_matrix(imgs, lmks, ref)
+        print("training...")
         Gm = G.mean(axis=1)
         G -= Gm[:,np.newaxis]
         N = lmks.shape[1]
         D = pca(G, frac, kmax)
         # normalize eigenvectors
-        for i in xrange(D.shape[1]):
+        for i in range(D.shape[1]):
+            print(i, " of ", D.shape[1], " completed")
             D[:,i] /= np.linalg.norm(D[:,i])
         # compute variance
         Q = D.T.dot(G)
@@ -60,7 +62,7 @@ class TextureModel(object):
         p = self.model.T.dot(t)
         # clamp
         c = 3
-        for i in xrange(len(self.variance)):
+        for i in range(len(self.variance)):
             v = c * np.sqrt(self.variance[i])
             if abs(p[i]) > v:
                 p[i] = v if p[i] > 0 else -v
@@ -69,6 +71,7 @@ class TextureModel(object):
 
 
 def get_data_matrix(imgs, lmks, ref):
+    print("Fetching data matrix")
     ref = ref.reshape((ref.size//2, 2)).astype('int32')
     mask = get_mask(ref, (640, 480))  # FIXME hardcoded image size
     verts = get_vertices(ref)
@@ -76,7 +79,7 @@ def get_data_matrix(imgs, lmks, ref):
     n_samples = lmks.shape[1]
     n_pixels = mask.sum() * 3
     G = np.empty((n_pixels, n_samples))
-    for i in xrange(n_samples):
+    for i in range(n_samples):
         src = lmks[:,i].reshape(ref.shape)
         img = normalize(next(imgs), get_aabb(src))
         warp = tm.warp_triangles(img, src[verts], ref[verts])

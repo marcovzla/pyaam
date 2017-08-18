@@ -8,7 +8,7 @@ from __future__ import division
 import os
 import sys
 import shutil
-import urllib2
+import urllib.request
 import tarfile
 import itertools
 import cv2
@@ -60,13 +60,13 @@ class MuctDataset(object):
 
     # dataset urls
     URLS = (
-        'http://muct.googlecode.com/files/README.txt',
-        'http://muct.googlecode.com/files/muct-landmarks-v1.tar.gz',
-        'http://muct.googlecode.com/files/muct-a-jpg-v1.tar.gz',
-        'http://muct.googlecode.com/files/muct-b-jpg-v1.tar.gz',
-        'http://muct.googlecode.com/files/muct-c-jpg-v1.tar.gz',
-        'http://muct.googlecode.com/files/muct-d-jpg-v1.tar.gz',
-        'http://muct.googlecode.com/files/muct-e-jpg-v1.tar.gz',
+        'https://raw.githubusercontent.com/StephenMilborrow/muct/master/README.txt',
+        'https://raw.githubusercontent.com/StephenMilborrow/muct/master/muct-landmarks-v1.tar.gz',
+        'https://raw.githubusercontent.com/StephenMilborrow/muct/master/muct-a-jpg-v1.tar.gz',
+        'https://raw.githubusercontent.com/StephenMilborrow/muct/master/muct-b-jpg-v1.tar.gz',
+        'https://raw.githubusercontent.com/StephenMilborrow/muct/master/muct-c-jpg-v1.tar.gz',
+        'https://raw.githubusercontent.com/StephenMilborrow/muct/master/muct-d-jpg-v1.tar.gz',
+        'https://raw.githubusercontent.com/StephenMilborrow/muct/master/muct-e-jpg-v1.tar.gz',
     )
 
     def __init__(self, datadir=DEFAULT_DATADIR):
@@ -116,7 +116,7 @@ class MuctDataset(object):
         """remove landmarks with unavailable points"""
         # unavailable points are marked with (0,0)
         is_complete = lambda x: all(x[::2] + x[1::2] != 0)
-        keep = np.array(map(is_complete, self.landmarks))
+        keep = np.array(list(map(is_complete, self.landmarks)))
         self.names = self.names[keep]
         self.tags = self.tags[keep]
         self.landmarks = self.landmarks[keep]
@@ -143,7 +143,7 @@ class MuctDataset(object):
                 yield self.image(n, flip=True)
 
     def iterdata(self):
-        return itertools.izip(self.names, self.tags, self.landmarks, self.landmarks_flip)
+        return zip(self.names, self.tags, self.landmarks, self.landmarks_flip)
 
     def all_lmks(self):
         return np.concatenate((self.landmarks, self.landmarks_flip))
@@ -155,10 +155,10 @@ def download(url, fname):
     """downloads file and shows progress"""
     fsize_dl = 0
     block_sz = 8192
-    u = urllib2.urlopen(url)
+    u = urllib.request.urlopen(url)
     with open(fname, 'wb') as f:
         meta = u.info()
-        fsize = int(meta.getheaders('Content-Length')[0])
+        fsize = int(meta["Content-Length"])
         sys.stdout.write('Downloading: %s Bytes: %s\n' % (fname, fsize))
         while True:
             buffer = u.read(block_sz)

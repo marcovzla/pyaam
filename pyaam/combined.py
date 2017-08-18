@@ -33,7 +33,8 @@ class CombinedModel(object):
         A = np.empty((n_feats, n_samples))
 
         # concatenate shape and texture parameters for each training example
-        for i in xrange(n_samples):
+        for i in range(n_samples):
+            print("Sample ",i," of ",n_samples," samples...")
             img = next(imgs)
             lmk = lmks[:,i]
             sparams = smodel.calc_params(lmk)

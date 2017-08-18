@@ -2,3 +2,6 @@
 *.npz
 *.h5
 data/muct
+data/*.pyc
+data/*.npz
+data/*.h5

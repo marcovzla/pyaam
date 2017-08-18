@@ -15,6 +15,8 @@ from pyaam.detector import FaceDetector
 from pyaam.texturemapper import TextureMapper
 from pyaam.utils import sample_texture
 
+from PIL import Image
+
 MAX_ITER = 10
 
 
@@ -35,10 +37,27 @@ def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
     cv2.namedWindow('shape')
     tm = TextureMapper(480, 640)
     tri = get_vertices(ref_shape)
-    for i in range(len(landmarks)):
-        img = next(images)
+
+    cap = cv2.VideoCapture(0)
+    cropped_width = 480
+    cropped_height = 640
+
+    while True:
+        ret, img = cap.read()
+        
+        # print(img)
+        baseheight = 640
+        hpercent = (baseheight/float(img.shape[0]))
+        wsize = int((float(img.shape[1])*float(hpercent)))
+        img = cv2.resize(img, (wsize, baseheight))
+
+        width = img.shape[0]
+        height = img.shape[1]
+        start_height = height//2-cropped_height//2
+        start_width = width//2-cropped_width//2
+        img = img[:, start_width:start_width+cropped_width]
         cv2.imshow('original', img)
-        lmks = landmarks[i].reshape(ref_shape.shape)
+        # lmks = landmarks[i].reshape(ref_shape.shape)
 
         # detect face
         pts = detector.detect(img)
@@ -57,13 +76,7 @@ def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
         draw_muct_shape(img2, shape.ravel())
         cv2.imshow('shape', img2)
 
-        key = cv2.waitKey()
-        if key == ord(' '):
-            pass
-        elif key == ord('n'):
-            continue
-        elif key == 27:
-            sys.exit()
+        
 
         shape, texture = get_instance(params, smodel, tmodel)
         g_image = sample_texture(img, shape, ref_shape, tm.warp_triangles)
@@ -101,14 +114,14 @@ def test_aam(images, landmarks, smodel, tmodel, R, ref_shape):
             img2 = img.copy()
             draw_muct_shape(img2, shape.ravel())
             cv2.imshow('shape', img2)
-
-            key = cv2.waitKey() & 0xff
-            if key == ord(' '):
-                continue
-            elif key == ord('n'):
-                break
-            elif key == 27:
-                sys.exit()
+            
+        key = cv2.waitKey() & 0xff
+        if key == ord(' '):
+            pass
+        elif key == ord('n'):
+            continue
+        elif key == 27:
+            sys.exit()
 
 
 

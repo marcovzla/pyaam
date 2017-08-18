@@ -26,7 +26,7 @@ def experiments(images, landmarks, smodel, tmodel, ref_shape):
     tri = get_vertices(ref_shape)
     split = smodel.num_modes() + 4
     perturbator = Perturbator(np.sqrt(smodel.variance[4:]), np.sqrt(tmodel.variance))
-    for i in xrange(len(landmarks)):
+    for i in range(len(landmarks)):
         # get image and corresponding landmarks
         img = next(images)
         lmks = landmarks[i]
@@ -57,7 +57,7 @@ def experiments(images, landmarks, smodel, tmodel, ref_shape):
             warped = draw_face(img, x_image, g_model, ref_shape, tm.warp_triangles)
             cv2.imshow('perturbed', warped)
 
-            key = cv2.waitKey()
+            key = cv2.waitKey() & 0xff
             if key == ord('n'):
                 break
             elif key == 27:
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     muct.load(clean=True)
     data = muct.all_lmks()
     imgs = muct.iterimages(mirror=True)
-    print 'training samples:', len(data)
+    print('training samples:', len(data))
 
     smodel = ShapeModel.load('data/shape.npz')
     tmodel = TextureModel.load('data/texture.npz')

@@ -31,7 +31,7 @@ class ShapeModel(object):
         # project raw data onto subspace
         Q = V.T.dot(X)
         # normalize coordinates w.r.t. scale
-        for i in xrange(n_samples):
+        for i in range(n_samples):
             Q[:,i] /= Q[0,i]
         # compute variance
         e = np.empty(4+k, dtype=float)
@@ -80,7 +80,7 @@ class ShapeModel(object):
 
     def clamp(self, p, c):
         scale = p[0]
-        for i in xrange(len(p)):
+        for i in range(len(p)):
             var = self.variance[i]
             if var < 0:
                 # ignore rigid components
@@ -105,7 +105,7 @@ def procrustes(X, max_iters=100, tolerance=1e-6):
 
     # optimize scale and rotation
     C_old = None
-    for _ in xrange(max_iters):
+    for _ in range(max_iters):
         # compute normalized canonical shape
         C = P.sum(axis=1) / n_samples
         C /= np.linalg.norm(C)
@@ -118,7 +118,7 @@ def procrustes(X, max_iters=100, tolerance=1e-6):
         C_old = C.copy()
 
         # rotate and scale each shape to best match canonical shape
-        for i in xrange(n_samples):
+        for i in range(n_samples):
             R = rot_scale_align(P[:,i], C)
             pts = np.row_stack((P[::2,i], P[1::2,i]))
             P[:,i] = R.dot(pts).T.flatten()

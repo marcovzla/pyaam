@@ -60,6 +60,6 @@ if __name__ == '__main__':
         if args.show_triangles:
             draw_polygons(warped, ref[verts], Color.blue)
         cv2.imshow('warp', warped[:300,:300])
-        key = cv2.waitKey()
+        key = cv2.waitKey() & 0xff
         if key == 27:
             sys.exit()

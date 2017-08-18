@@ -3,7 +3,6 @@
 from __future__ import division
 
 import cv2
-import cv2.cv as cv
 import numpy as np
 from pyaam.muct import MuctDataset
 from pyaam.utils import get_mask, get_vertices
@@ -11,14 +10,14 @@ from pyaam.utils import get_mask, get_vertices
 
 
 class Color:
-    black = cv.RGB(0, 0, 0)
-    white = cv.RGB(255, 255, 255)
-    red = cv.RGB(255, 0, 0)
-    green = cv.RGB(0, 255, 0)
-    blue = cv.RGB(0, 0, 255)
-    cyan = cv.RGB(0, 255, 255)
-    magenta = cv.RGB(255, 0, 255)
-    yellow = cv.RGB(255, 255, 0)
+    black = (0, 0, 0)
+    white = (255, 255, 255)
+    red = (255, 0, 0)
+    green = (0, 255, 0)
+    blue = (0, 0, 255)
+    cyan = (0, 255, 255)
+    magenta = (255, 0, 255)
+    yellow = (255, 255, 0)
 
 
 
@@ -27,8 +26,8 @@ def prepare(x):
 
 def draw_string(img, text, font=cv2.FONT_HERSHEY_COMPLEX, scale=0.6, thickness=1):
     size, baseLine = cv2.getTextSize(text, font, scale, thickness)
-    cv2.putText(img, text, (0, size[1]), font, scale, Color.black, thickness, cv2.CV_AA)
-    cv2.putText(img, text, (1, size[1]+1), font, scale, Color.white, thickness, cv2.CV_AA)
+    cv2.putText(img, text, (0, size[1]), font, scale, Color.black, thickness, cv2.LINE_AA)
+    cv2.putText(img, text, (1, size[1]+1), font, scale, Color.white, thickness, cv2.LINE_AA)
 
 def draw_points(img, points, color, radius=2):
     points = prepare(points)

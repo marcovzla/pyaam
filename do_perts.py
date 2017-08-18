@@ -41,15 +41,15 @@ def experiments(images, landmarks, smodel, tmodel, ref_shape, fout):
     n_params = 4 + smodel.num_modes() + tmodel.num_modes()
     t_vec_sz = tmodel.texture_vector_size()
 
-    h5 = tb.openFile(fout, mode='w', title='perturbations')
+    h5 = tb.open_file(fout, mode='w', title='perturbations')
     filters = tb.Filters(complevel=5, complib='blosc')
-    P = h5.createCArray(h5.root, 'perturbations', tb.Float64Atom(),
+    P = h5.create_carray(h5.root, 'perturbations', tb.Float64Atom(),
             shape=(n_params, total_perts), filters=filters)
-    R = h5.createCArray(h5.root, 'residuals', tb.Float64Atom(),
+    R = h5.create_carray(h5.root, 'residuals', tb.Float64Atom(),
             shape=(t_vec_sz, total_perts), filters=filters,
             chunkshape=(2048, 128))
 
-    for i in xrange(len(landmarks)):
+    for i in range(len(landmarks)):
         # get image and corresponding landmarks
         img = next(images)
         lmks = landmarks[i]
@@ -62,7 +62,7 @@ def experiments(images, landmarks, smodel, tmodel, ref_shape, fout):
         perturbations = perturbator.perturbations(s_params, t_params)
         for j,pert in enumerate(perturbations):
             col = n_perts * i + j
-            print 'perturbation {:,} of {:,}'.format(col+1, total_perts)
+            print( 'perturbation {:,} of {:,}'.format(col+1, total_perts))
             s = pert[:split]
             t = pert[split:]
             x_image = smodel.calc_shape(s)
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
     data = muct.all_lmks()
     imgs = muct.iterimages(mirror=True)
-    print 'training samples:', len(data)
+    print( 'training samples:', len(data))
 
     smodel = ShapeModel.load('data/shape.npz')
     tmodel = TextureModel.load('data/texture.npz')
@@ -111,4 +111,4 @@ if __name__ == '__main__':
     ref = ref.reshape((ref.size//2, 2))
 
     experiments(imgs, data, smodel, tmodel, ref, args.fout)
-    print 'wrote', args.fout
+    print( 'wrote', args.fout)

@@ -3,7 +3,6 @@
 from __future__ import division
 
 import cv2
-import cv2.cv as cv
 import numpy as np
 
 
@@ -15,6 +14,7 @@ class PatchesModel(object):
 
     @classmethod
     def train(cls, lmks, imgs, ref, psize, ssize, var, lmbda, mu_init, nsamples):
+        print("Training...")
         patches = train_patches(lmks, imgs, ref, psize, ssize, var, lmbda, mu_init, nsamples)
         return cls(patches, ref)
 
@@ -60,16 +60,16 @@ def train_patch(images, psize, var=1.0, lmbda=1e-6, mu_init=1e-3, nsamples=1000)
     # stochastic gradient descent
     mu = mu_init
     step = pow(1e-8/mu_init, 1/nsamples)
-    for sample in xrange(nsamples):
+    for sample in range(nsamples):
         i = np.random.randint(N)
         I = convert_image(images[i])
         dP[:] = 0
         # compute gradient direction
-        for y in xrange(dy):
-            for x in xrange(dx):
+        for y in range(dy):
+            for x in range(dx):
                 Wi = I[y:y+h,x:x+w].copy()
                 Wi -= Wi.dot(O)
-                Wi = cv2.normalize(Wi)
+                cv2.normalize(Wi, Wi)
                 dP += (F[y,x] - P.dot(Wi)) * Wi
         # take a small step
         P += mu * (dP - lmbda*P)
@@ -102,10 +102,10 @@ def train_patches(lmks, imgs, ref, psize, ssize, var=1.0, lmbda=1e-6, mu_init=1e
     patches = []
 
     # train each patch model
-    for i in xrange(n):
-        print 'patch', i+1, 'of', n, '...'
+    for i in range(n):
+        print( 'patch', i+1, 'of', n, '...')
         images = []
-        for j in xrange(lmks.shape[1]):
+        for j in range(lmks.shape[1]):
             im = imgs[j]
             pt = lmks[:,j]
             S = calc_simil(pt, ref)
@@ -149,7 +149,9 @@ def make_gaussian(shape, var):
     x0 = w // 2
     y0 = h // 2
     mat = np.exp(-0.5 * (pow(x-x0, 2) + pow(y-y0, 2)) / var)
-    return cv2.normalize(mat, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
+    op = mat
+    cv2.normalize(mat, op, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
+    return op
 
 def convert_image(img):
     gray = img.sum(axis=2) / img.shape[2]
@@ -162,7 +164,7 @@ def calc_response(img, patch, normalize=False):
     patch = patch.astype('float32')
     res = cv2.matchTemplate(img, patch, cv2.TM_CCOEFF_NORMED)
     if normalize:
-        res = cv2.normalize(res, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
+        cv2.normalize(res, res, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
         res /= res.sum()
     return res
 
@@ -188,7 +190,7 @@ def calc_peaks(img, points, ssize, patches, ref):
     S = calc_simil(pt, ref)
     Si = inv_simil(S)
     pts = apply_simil(Si, points)
-    for i in xrange(len(points)):
+    for i in range(len(points)):
         patch = patches[i]
         psize = patch.shape
         wsize = (ssize[0]+psize[0],ssize[1]+psize[1])
