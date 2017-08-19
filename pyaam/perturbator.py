@@ -49,13 +49,13 @@ class Perturbator(object):
                 pert_pose[i] += pert
                 yield np.concatenate((pert_pose, shape, texture))
 
-        for i in xrange(len(shape)):
+        for i in range(len(shape)):
             for pert in self.param_perts:
                 pert_shape = shape.copy()
                 pert_shape[i] += pert * self.s_sigma[i] * scale
                 yield np.concatenate((pose, pert_shape, texture))
 
-        for i in xrange(len(texture)):
+        for i in range(len(texture)):
             for pert in self.param_perts:
                 pert_texture = texture.copy()
                 pert_texture[i] += pert * self.t_sigma[i]

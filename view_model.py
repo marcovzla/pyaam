@@ -4,7 +4,6 @@ from __future__ import division
 
 import sys
 import cv2
-import cv2.cv as cv
 import argparse
 import numpy as np
 from pyaam.shape import ShapeModel
@@ -49,7 +48,7 @@ def view_shape_model(shp_fn, scale, tranx, trany, width, height):
     smodel = ShapeModel.load(shp_fn)
     vals = genvals()
     while True:
-        for k in xrange(4, smodel.model.shape[1]):
+        for k in range(4, smodel.model.shape[1]):
             for v in vals:
                 p = smodel.get_params(scale, tranx, trany)
                 p[k] = p[0] * v * 3 * np.sqrt(smodel.variance[k])
@@ -59,7 +58,7 @@ def view_shape_model(shp_fn, scale, tranx, trany, width, height):
                 q = smodel.calc_shape(p)
                 draw_muct_shape(img, q)
                 cv2.imshow('shape model', img)
-                if cv2.waitKey(10) == 27:
+                if cv2.waitKey(10) & 0xff == 27:
                     sys.exit()
 
 
@@ -73,7 +72,7 @@ def view_texture_model(shp_fn, txt_fn, scale, tranx, trany, width, height):
     ref = smodel.get_shape(scale, tranx, trany)
     ref = ref.reshape((ref.size//2, 2))
     while True:
-        for k in xrange(tmodel.num_modes()):
+        for k in range(tmodel.num_modes()):
             for v in vals:
                 p = np.zeros(tmodel.num_modes())
                 p[k] = v * 3 * np.sqrt(tmodel.variance[k])
@@ -83,7 +82,7 @@ def view_texture_model(shp_fn, txt_fn, scale, tranx, trany, width, height):
                 t = tmodel.calc_texture(p)
                 draw_texture(img, t, ref)
                 cv2.imshow('texture model', img)
-                if cv2.waitKey(10) == 27:
+                if cv2.waitKey(10) & 0xff == 27:
                     sys.exit()
 
 
@@ -101,7 +100,7 @@ def view_combined_model(shp_fn, txt_fn, cmb_fn, scale, tranx, trany, width, heig
     ref = ref.reshape((ref.size//2, 2))
     verts = get_vertices(ref)
     while True:
-        for k in xrange(cmodel.num_modes()):
+        for k in range(cmodel.num_modes()):
             for v in vals:
                 p = np.zeros(cmodel.num_modes())
                 p[k] = v * 3 * np.sqrt(cmodel.variance[k])
@@ -119,7 +118,7 @@ def view_combined_model(shp_fn, txt_fn, cmb_fn, scale, tranx, trany, width, heig
                 draw_string(warped, s)
                 cv2.imshow('combined model', warped)
 
-                if cv2.waitKey(10) == 27:
+                if cv2.waitKey(10) & 0xff == 27:
                     sys.exit()
 
 
@@ -141,11 +140,12 @@ def view_patches_model(ptc_fn, shp_fn, width):
     image[:] = 192
     patches = []
     points = []
-    for i in xrange(len(pmodel.patches)):
-        im = cv2.normalize(pmodel.patches[i], alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
+    for i in range(len(pmodel.patches)):
+        im = pmodel.patches[i]
+        cv2.normalize(pmodel.patches[i], im, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
         im = cv2.resize(im, (int(scale*im.shape[0]), int(scale*im.shape[1])))
         im = im.astype('uint8')
-        patches.append(cv2.cvtColor(im, cv.CV_GRAY2BGR))
+        patches.append(cv2.cvtColor(im, cv2.COLOR_GRAY2BGR))
         h,w = patches[i].shape[:2]
         points.append((int(scale*ref[i,1] + image_size[0]/2 - h/2),
                        int(scale*ref[i,0] + image_size[1]/2 - w/2)))
@@ -158,11 +158,11 @@ def view_patches_model(ptc_fn, shp_fn, width):
         y,x = points[i]
         h,w = patches[i].shape[:2]
         img[y:y+h,x:x+w,:] = patches[i]  # draw current patch on top
-        cv2.rectangle(img, (x,y), (x+w, y+h), Color.red, 2, cv2.CV_AA)
+        cv2.rectangle(img, (x,y), (x+w, y+h), Color.red, 2, cv2.LINE_AA)
         text = 'patch %d' % (i+1)
         draw_string(img, text)
         cv2.imshow('patches model', img)
-        c = cv2.waitKey(0)
+        c = cv2.waitKey(0) & 0xff
         if c == 27:
             break
         elif c == ord('j'):

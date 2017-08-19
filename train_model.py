@@ -40,46 +40,46 @@ if __name__ == '__main__':
     muct.load(clean=True)
     data = muct.all_lmks()
     imgs = muct.iterimages(mirror=True)
-    print 'training samples:', len(data)
+    print( 'training samples:', len(data))
 
     if args.model == 'shape':
-        print 'training shape model ...'
+        print( 'training shape model ...')
         model = ShapeModel.train(data.T, args.frac, args.kmax)
-        print 'retained:', model.num_modes(), 'modes'
+        print( 'retained:', model.num_modes(), 'modes')
         model.save(args.shp_fn)
-        print 'wrote', args.shp_fn
+        print( 'wrote', args.shp_fn)
 
     elif args.model == 'patches':
-        print 'reading images ...'
+        print( 'reading images ...')
         imgs = list(imgs)
-        print 'training patches model ...'
+        print( 'training patches model ...')
         sm = ShapeModel.load(args.shp_fn)
         model = PatchesModel.train(data.T, imgs, sm.get_shape(args.face_width), args.psize,
                                    args.ssize, args.var, args.lmbda, args.mu, args.nsamples)
         model.save(args.ptc_fn)
-        print 'wrote', args.ptc_fn
+        print( 'wrote', args.ptc_fn)
 
     elif args.model == 'detector':
-        print 'training face detector ...'
+        print( 'training face detector ...')
         sm = ShapeModel.load(args.shp_fn)
         model = FaceDetector.train(data.T, imgs, sm.get_shape())
         model.save(args.dtc_fn)
-        print 'wrote', args.dtc_fn
+        print( 'wrote', args.dtc_fn)
 
     elif args.model == 'texture':
-        print 'training texture model ...'
+        print( 'training texture model ...')
         sm = ShapeModel.load(args.shp_fn)
         ref = sm.get_shape(200, 150, 150)
         model = TextureModel.train(data.T, imgs, ref, args.frac, args.kmax)
-        print 'retained:', model.num_modes(), 'modes'
+        print( 'retained:', model.num_modes(), 'modes')
         model.save(args.txt_fn)
-        print 'wrote', args.txt_fn
+        print( 'wrote', args.txt_fn)
 
     elif args.model == 'combined':
-        print 'training combined model ...'
+        print( 'training combined model ...')
         sm = ShapeModel.load(args.shp_fn)
         ref = sm.get_shape(200, 150, 150)
         model = CombinedModel.train(data.T, imgs, ref, args.frac, args.kmax)
-        print 'retained:', model.num_modes(), 'modes'
+        print( 'retained:', model.num_modes(), 'modes')
         model.save(args.cmb_fn)
-        print 'wrote', args.cmb_fn
+        print( 'wrote', args.cmb_fn)

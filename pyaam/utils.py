@@ -67,8 +67,8 @@ def pca(M, frac, kmax=None):
 def gram_schmid(V):
     """Gram-Schmid orthonormalization (in-place)"""
     n = V.shape[1]
-    for i in xrange(n):
-        for j in xrange(i):
+    for i in range(n):
+        for j in range(i):
             # subtract projection
             V[:,i] -= np.dot(V[:,i], V[:,j]) * V[:,j]
         # normalize

@@ -53,7 +53,7 @@ if __name__ == '__main__':
             img = drawer.draw(flip, points, line, pairs) 
             cv2.imshow('muct', img)
             # handle keyboard events
-            key = cv2.waitKey()
+            key = cv2.waitKey() &0xff
             if key == 27:
                 sys.exit()
             elif key == ord(' '):

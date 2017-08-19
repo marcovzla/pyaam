@@ -3,7 +3,6 @@
 from __future__ import division
 
 import cv2
-import cv2.cv as cv
 import numpy as np
 
 
@@ -17,18 +16,20 @@ class FaceDetector(object):
         self.offset = offset
         self.ref_shape = ref
         self.cascade = cv2.CascadeClassifier(CASCADE_FILENAME)
-        self.flags = cv.CV_HAAR_FIND_BIGGEST_OBJECT | cv.CV_HAAR_SCALE_IMAGE
+        self.flags = cv2.CASCADE_SCALE_IMAGE
 
     @classmethod
     def train(cls, lmks, imgs, ref, frac=0.8, scale_factor=1.1, min_neighbors=2, min_size=(30,30)):
         detector = cv2.CascadeClassifier(CASCADE_FILENAME)
-        flags = cv.CV_HAAR_FIND_BIGGEST_OBJECT | cv.CV_HAAR_SCALE_IMAGE
+        flags = cv2.CASCADE_SCALE_IMAGE
         N = lmks.shape[1]
         xoffset = []
         yoffset = []
         zoffset = []
 
-        for i in xrange(N):
+        for i in range(N):
+            if i%100 == 0:
+                print("Training on ", i, "of ", N)
             pts = lmks[:,i]
             img = next(imgs)
 

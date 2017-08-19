@@ -62,7 +62,7 @@ def dot(a, b, out=None):
         if out.shape != (l, n):
             raise (ValueError, "`out` array does not have the correct shape")
     else:
-        f = tb.openFile('dot.h5', 'w')
+        f = tb.open_file('dot.h5', 'w')
         filters = tb.Filters(complevel=5, complib='blosc')
         out = f.createCArray(f.root, 'out', tb.Atom.from_dtype(a.dtype),
                              shape=(l, n), filters=filters)
@@ -86,16 +86,16 @@ if __name__ == "__main__":
 
     # Matrix dimensions
     L, M, N = 1000, 100, 2000
-    print "Multiplying (%d, %d) x (%d, %d) matrices" % (L, M, M, N)
+    print("Multiplying (%d, %d) x (%d, %d) matrices" % (L, M, M, N))
 
     a = np.linspace(0, 1, L*M).reshape(L, M)
     b = np.linspace(0, 1, M*N).reshape(M, N)
 
     t0 = time()
     cdot = np.dot(a,b)
-    print "Time for np.dot->", round(time()-t0, 3), cdot.shape
+    print("Time for np.dot->", round(time()-t0, 3), cdot.shape)
 
-    f = tb.openFile('matrix-pt.h5', 'w')
+    f = tb.open_file('matrix-pt.h5', 'w')
 
     l, m, n = a.shape[0], a.shape[1], b.shape[1]
 
@@ -111,7 +111,7 @@ if __name__ == "__main__":
 
     t0 = time()
     dot(a, b, out=cd)
-    print "Time for ooc dot->", round(time()-t0, 3), cd.shape
+    print("Time for ooc dot->", round(time()-t0, 3), cd.shape)
 
     np.testing.assert_almost_equal(cd, cdot)
 

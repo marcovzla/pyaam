@@ -30,7 +30,7 @@ def view_face_tracker():
         tracker.track(img)
         draw_muct_shape(img, tracker.points)
         cv2.imshow('face tracker', img)
-        key = cv2.waitKey(10)
+        key = cv2.waitKey(10) & 0xff
         if key == 27:
             break
         elif key == ord('r'):
@@ -48,7 +48,7 @@ def view_face_detector(detector_fn):
         p = detector.detect(img)
         draw_muct_shape(img, p)
         cv2.imshow('face detector', img)
-        if cv2.waitKey(10) == 27:
+        if cv2.waitKey(10) & 0xff == 27:
             break
 
 
